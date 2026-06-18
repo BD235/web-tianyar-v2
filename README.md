@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌴 Wisata Tianyar (Versi 2)
 
-## Getting Started
+Platform sistem informasi destinasi wisata Desa Tianyar, Bali. Dibangun dengan fokus pada performa yang ringan, antarmuka modern, dan pengalaman pengguna yang cepat.
 
-First, run the development server:
+## 🛠️ Teknologi Utama
+- **Framework**: Next.js 15+ (App Router)
+- **UI & Styling**: Tailwind CSS v4, Lucide React
+- **Database**: Supabase (PostgreSQL)
+- **Bahasa**: TypeScript
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Cara Menjalankan Proyek Secara Lokal
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Pastikan `pnpm` sudah terinstal**
+   Proyek ini menggunakan `pnpm`. Jika belum punya, install dengan:
+   ```bash
+   npm install -g pnpm
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. **Instalasi Dependensi**
+   Buka terminal di dalam folder proyek ini, lalu jalankan:
+   ```bash
+   pnpm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Atur Environment Variables (Database)**
+   Buat file bernama `.env.local` di *root folder* (sejajar dengan file `package.json`). Isi dengan kunci Supabase Anda:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://[ID-PROJECT].supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=ey...[KUNCI-ANDA]
+   ```
 
-## Learn More
+4. **Jalankan Server Lokal**
+   ```bash
+   pnpm dev
+   ```
+   Buka browser dan akses [http://localhost:3000](http://localhost:3000) untuk melihat hasilnya.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Proyek ini merupakan bagian dari pengabdian KKN.*

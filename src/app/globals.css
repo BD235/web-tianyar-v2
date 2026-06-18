@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  /* Mengatur font utama (sans) menjadi Montserrat */
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  
+  /* Menambahkan custom class untuk font logo (bisa dipanggil dengan class `font-logo`) */
+  --font-logo: var(--font-kaushan), cursive;
+}
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900;
+  }
+}

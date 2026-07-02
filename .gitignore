@@ -20,11 +20,13 @@
 # production
 /build
 
-# misc
+# misc & OS
 .DS_Store
+Thumbs.db
 *.pem
 
-# debug
+# debug & logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -32,14 +34,37 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!.env.template
 
-# vercel
+# vercel & build cache
 .vercel
+.turbo
+.cache
+.swc
+
+# IDEs & Editors
+.vscode/
+.idea/
+.gemini/
+.cursor/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
+# Supabase local (if using CLI)
+supabase/.temp/
+supabase/.branches/
+supabase/functions/.env
+
 # --- CUSTOM IGNORES ---
-# Mengabaikan script uji coba lokal
-test-db.mjs
+# Script uji coba / skrip sementara lokal
+*.mjs.tmp
+test-*.mjs
+test-*.js

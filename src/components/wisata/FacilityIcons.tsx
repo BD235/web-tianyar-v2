@@ -6,6 +6,10 @@ import {
   Tent,
   Waves,
   Info,
+  Camera,
+  Landmark,
+  Umbrella,
+  ShoppingBag,
 } from "lucide-react";
 import { JSX } from "react";
 
@@ -20,13 +24,17 @@ const getFacilityIcon = (facilityName: string): JSX.Element => {
   const name = facilityName.toLowerCase();
   
   if (name.includes("wifi")) return <Wifi className="w-8 h-8 stroke-[1.5]" />;
-  if (name.includes("renang") || name.includes("pool")) return <Waves className="w-8 h-8 stroke-[1.5]" />;
-  if (name.includes("makan") || name.includes("restoran") || name.includes("dinner")) return <Utensils className="w-8 h-8 stroke-[1.5]" />;
+  if (name.includes("renang") || name.includes("pool") || name.includes("pantai")) return <Waves className="w-8 h-8 stroke-[1.5]" />;
+  if (name.includes("makan") || name.includes("warung") || name.includes("restoran") || name.includes("kuliner")) return <Utensils className="w-8 h-8 stroke-[1.5]" />;
   if (name.includes("parkir") || name.includes("parking")) return <Car className="w-8 h-8 stroke-[1.5]" />;
-  if (name.includes("toilet") || name.includes("mandi") || name.includes("tub")) return <Bath className="w-8 h-8 stroke-[1.5]" />;
+  if (name.includes("toilet") || name.includes("mandi") || name.includes("wc")) return <Bath className="w-8 h-8 stroke-[1.5]" />;
   if (name.includes("kemah") || name.includes("camping")) return <Tent className="w-8 h-8 stroke-[1.5]" />;
+  if (name.includes("foto") || name.includes("kamera") || name.includes("spot") || name.includes("selfie")) return <Camera className="w-8 h-8 stroke-[1.5]" />;
+  if (name.includes("ibadah") || name.includes("sholat") || name.includes("masjid") || name.includes("pura")) return <Landmark className="w-8 h-8 stroke-[1.5]" />;
+  if (name.includes("gazebo") || name.includes("istirahat") || name.includes("santai") || name.includes("pondok")) return <Umbrella className="w-8 h-8 stroke-[1.5]" />;
+  if (name.includes("sewa") || name.includes("penyewaan") || name.includes("alat") || name.includes("rental")) return <ShoppingBag className="w-8 h-8 stroke-[1.5]" />;
   
-  // Ikon default jika tidak ada yang cocok
+  // Ikon default jika tidak ada yang cocok (misal: Pusat Informasi)
   return <Info className="w-8 h-8 stroke-[1.5]" />;
 };
 

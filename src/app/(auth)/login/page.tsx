@@ -1,0 +1,254 @@
+'use client'
+
+import { useState, useTransition, useRef, KeyboardEvent } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Mail, Eye, EyeOff, ChevronLeft, Loader2 } from 'lucide-react'
+import { loginAction, verifyOtpAction, resendOtpAction } from '@/actions/auth.actions'
+import { useRouter } from 'next/navigation'
+
+const OTP_LENGTH = 6 // 6 digit sesuai konfigurasi Supabase
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [step, setStep] = useState<'login' | 'verify'>('login')
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
+
+  // Login state
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  // OTP state — jumlah kotak mengikuti OTP_LENGTH
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''))
+  const inputRefs = Array.from({ length: OTP_LENGTH }, () => useRef<HTMLInputElement>(null))
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return // hanya angka
+    const newOtp = [...otp]
+    newOtp[index] = value.slice(-1) // ambil 1 digit terakhir
+    setOtp(newOtp)
+    if (value && index < OTP_LENGTH - 1) inputRefs[index + 1].current?.focus()
+  }
+
+  const handleOtpKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs[index - 1].current?.focus()
+    }
+  }
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH)
+    if (pasted.length === OTP_LENGTH) {
+      setOtp(pasted.split(''))
+      inputRefs[OTP_LENGTH - 1].current?.focus()
+    }
+    e.preventDefault()
+  }
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    const formData = new FormData()
+    formData.append('email', email)
+    formData.append('password', password)
+
+    startTransition(async () => {
+      const result = await loginAction(null, formData)
+      if (result?.error) {
+        setError(result.error)
+        if (result.isRateLimited) alert(result.error)
+      } else if (result?.success) {
+        setStep('verify')
+      }
+    })
+  }
+
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    const token = otp.join('')
+    if (token.length < OTP_LENGTH) {
+      setError(`Masukkan ${OTP_LENGTH} digit kode OTP`)
+      return
+    }
+    const formData = new FormData()
+    formData.append('email', email)
+    formData.append('token', token)
+
+    startTransition(async () => {
+      const result = await verifyOtpAction(null, formData)
+      if (result?.error) {
+        setError(result.error)
+      } else if (result?.success) {
+        router.push('/admin')
+      }
+    })
+  }
+
+  const handleResend = () => {
+    setError(null)
+    startTransition(async () => {
+      const result = await resendOtpAction(email)
+      if (result?.error) setError(result.error)
+      else alert('Kode OTP telah dikirim ulang ke email Anda')
+    })
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 relative">
+      {/* Tombol kembali */}
+      <button
+        onClick={() => (step === 'verify' ? setStep('login') : router.push('/'))}
+        className="absolute top-8 left-8 p-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition"
+      >
+        <ChevronLeft className="w-5 h-5 text-gray-700" />
+      </button>
+
+      <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-sm">
+        <AnimatePresence mode="wait">
+
+          {/* Step 1: Login */}
+          {step === 'login' && (
+            <motion.div
+              key="login"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Login Admin</h1>
+                <p className="text-sm text-gray-500">Masuk ke admin untuk mengelola informasi wisata</p>
+              </div>
+
+              {error && (
+                <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleLogin} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-sm text-gray-600 ml-1">Email</label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Masukkan email"
+                      className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none text-gray-900"
+                      required
+                      disabled={isPending}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm text-gray-600 ml-1">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Masukkan password"
+                      className="w-full pl-4 pr-11 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none text-gray-900"
+                      required
+                      disabled={isPending}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl transition disabled:opacity-70 flex justify-center items-center gap-2 mt-4"
+                >
+                  {isPending ? <><Loader2 className="w-4 h-4 animate-spin" /> Memproses...</> : 'Login'}
+                </button>
+              </form>
+            </motion.div>
+          )}
+
+          {/* Step 2: Verifikasi OTP */}
+          {step === 'verify' && (
+            <motion.div
+              key="verify"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Verifikasi Kode</h1>
+                <p className="text-sm text-gray-500">
+                  Kode OTP telah dikirim ke<br />
+                  <span className="font-medium text-gray-700">{email}</span>
+                </p>
+              </div>
+
+              {error && (
+                <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleVerify} className="space-y-8">
+                {/* 6 kotak OTP */}
+                <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      ref={inputRefs[index]}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                      className="w-11 h-12 text-center text-xl font-semibold bg-gray-100 border-2 border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 outline-none transition text-gray-900 disabled:opacity-50"
+                      disabled={isPending}
+                      autoFocus={index === 0}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isPending || otp.join('').length < 6}
+                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl transition disabled:opacity-70 flex justify-center items-center gap-2"
+                >
+                  {isPending ? <><Loader2 className="w-4 h-4 animate-spin" /> Memverifikasi...</> : 'Verifikasi'}
+                </button>
+              </form>
+
+              <div className="mt-6 text-center text-sm text-gray-500">
+                Tidak menerima kode?{' '}
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={isPending}
+                  className="text-blue-500 hover:text-blue-600 font-medium disabled:opacity-50"
+                >
+                  Kirim ulang
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}

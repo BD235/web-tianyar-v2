@@ -45,6 +45,7 @@ export interface Database {
           facilities: Json | null
           tips_and_rules: string | null
           is_popular: boolean | null
+          map_url: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -61,6 +62,7 @@ export interface Database {
           facilities?: Json | null
           tips_and_rules?: string | null
           is_popular?: boolean | null
+          map_url?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -77,6 +79,7 @@ export interface Database {
           facilities?: Json | null
           tips_and_rules?: string | null
           is_popular?: boolean | null
+          map_url?: string | null
           created_at?: string | null
           updated_at?: string | null
         }

@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   description: "Platform informasi destinasi wisata di Desa Tianyar, Bali",
 };
 
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,8 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${montserrat.variable} ${kaushan.variable}`}>
-      <body className="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-        {children}
+      <body className="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen flex flex-col overflow-y-scroll">
+        <LanguageProvider>
+          <LanguageSwitcher />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

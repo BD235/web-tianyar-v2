@@ -4,29 +4,54 @@ import CategoryPills from '@/components/home/CategoryPills'
 import DestinationCard from '@/components/home/DestinationCard'
 import MapWrapper from '@/components/map/MapWrapper'
 import Link from 'next/link'
+import { MapPin } from 'lucide-react'
 
 export default async function HomePage() {
-  // Fetch data from database
-  const { data: popularDestinations } = await getPopularDestinations()
-  const { data: allDestinations } = await getDestinations()
-  const { data: categories } = await getCategories()
+  // Fetch data from database secara paralel (menghindari waterfall)
+  const [popularRes, allRes, categoriesRes] = await Promise.all([
+    getPopularDestinations(),
+    getDestinations(),
+    getCategories(),
+  ])
+
+  const popularDestinations = popularRes.data
+  const allDestinations = allRes.data
+  const categories = categoriesRes.data
 
   const popularListRaw: any[] = popularDestinations || []
   const allListRaw: any[] = allDestinations || []
   const categoryListRaw: any[] = categories || []
 
   // Logic for limiting items and showing "See all"
-  const hasMorePopular = popularListRaw.length > 4
-  const displayPopular = popularListRaw.slice(0, 4)
+  const hasMorePopular = popularListRaw.length > 10
+  const displayPopular = popularListRaw.slice(0, 10)
 
   const hasMoreAll = allListRaw.length > 8
   const displayAll = allListRaw.slice(0, 8)
 
   return (
-    <main className="min-h-screen px-6 py-8 max-w-7xl mx-auto space-y-12 pb-32">
-      {/* Search & Categories Section */}
-      {/* Responsif: lg (desktop) sejajar kiri-kanan, <lg (tablet/hp) turun ke bawah rata kiri */}
+    <main className="min-h-screen px-6 pt-[30px] pb-8 max-w-7xl mx-auto space-y-12 pb-32">
+      {/* Search & Categories Section — termasuk header mobile di atasnya */}
       <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
+
+        {/* Header Beranda — hanya mobile S/M/L (< 768px) */}
+        <div className="md:hidden w-full flex items-start justify-between mb-1">
+          {/* Kiri: label + judul */}
+          <div>
+            <p className="text-xs font-medium text-gray-400 mb-0.5">Beranda</p>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-tight">
+              Tianyar
+            </h1>
+          </div>
+          {/* Kanan: lokasi */}
+          <div className="flex items-center gap-1 mt-2">
+            <MapPin className="w-3 h-3 text-blue-500 shrink-0" />
+            <span className="text-xs text-gray-500 whitespace-nowrap">
+              Tianyar, Bali
+            </span>
+          </div>
+        </div>
+
         <div className="w-full lg:w-[400px] shrink-0">
           <SearchBar />
         </div>
@@ -38,19 +63,19 @@ export default async function HomePage() {
       {/* Popular Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">Popular</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Popular</h2>
           {hasMorePopular && (
             <Link href="/destinasi?filter=popular" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition">
               See all
             </Link>
           )}
         </div>
-        
+
         {/* Horizontal scroll for popular items */}
         <div className="flex gap-5 overflow-x-auto pb-8 pt-4 px-2 -mx-2 no-scrollbar snap-x">
           {displayPopular.length > 0 ? (
             displayPopular.map((dest) => (
-              <div key={dest.id} className="snap-start shrink-0">
+              <div key={dest.id} className="snap-start shrink-0 w-[220px] sm:w-[260px]">
                 <DestinationCard destination={dest} isPopular={true} />
               </div>
             ))
@@ -65,14 +90,14 @@ export default async function HomePage() {
       {/* All Destinations Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">All</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">All</h2>
           {hasMoreAll && (
             <Link href="/destinasi" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition">
               See all
             </Link>
           )}
         </div>
-        
+
         {/* Grid layout for all items */}
         {displayAll.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2">
@@ -90,16 +115,16 @@ export default async function HomePage() {
       {/* Map Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">Map</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Map</h2>
           <Link href="/peta" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition">
             Lihat Peta Penuh
           </Link>
         </div>
-        
+
         <div className="w-full relative">
-          <MapWrapper 
-            destinations={allListRaw} 
-            className="w-full h-[450px] relative rounded-3xl overflow-hidden shadow-sm border border-gray-200" 
+          <MapWrapper
+            destinations={allListRaw}
+            className="w-full h-[450px] relative rounded-3xl overflow-hidden shadow-sm border border-gray-200"
           />
         </div>
       </section>

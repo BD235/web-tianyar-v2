@@ -36,14 +36,14 @@ alter table public.destinations enable row level security;
 create policy "Allow public read access for categories" on public.categories for select using (true);
 create policy "Allow public read access for destinations" on public.destinations for select using (true);
 
--- Create policies for admin (ALL ACCESS) - Assuming authenticated users are admins
-create policy "Allow admin full access for categories" on public.categories for all using (auth.role() = 'authenticated');
-create policy "Allow admin full access for destinations" on public.destinations for all using (auth.role() = 'authenticated');
+-- Create policies for admin (ALL ACCESS) - Secure check checking email matching admin email
+create policy "Allow admin full access for categories" on public.categories for all using (auth.jwt() ->> 'email' = 'admin@tianyar.com');
+create policy "Allow admin full access for destinations" on public.destinations for all using (auth.jwt() ->> 'email' = 'admin@tianyar.com');
 
 -- Create Storage Bucket for images
 insert into storage.buckets (id, name, public) values ('wisata-images', 'wisata-images', true);
 
 create policy "Public Access to Images" on storage.objects for select using (bucket_id = 'wisata-images');
-create policy "Admin Upload Access" on storage.objects for insert with check (bucket_id = 'wisata-images' and auth.role() = 'authenticated');
-create policy "Admin Update Access" on storage.objects for update using (bucket_id = 'wisata-images' and auth.role() = 'authenticated');
-create policy "Admin Delete Access" on storage.objects for delete using (bucket_id = 'wisata-images' and auth.role() = 'authenticated');
+create policy "Admin Upload Access" on storage.objects for insert with check (bucket_id = 'wisata-images' and auth.jwt() ->> 'email' = 'admin@tianyar.com');
+create policy "Admin Update Access" on storage.objects for update using (bucket_id = 'wisata-images' and auth.jwt() ->> 'email' = 'admin@tianyar.com');
+create policy "Admin Delete Access" on storage.objects for delete using (bucket_id = 'wisata-images' and auth.jwt() ->> 'email' = 'admin@tianyar.com');

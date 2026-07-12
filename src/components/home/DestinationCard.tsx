@@ -37,7 +37,7 @@ export default function DestinationCard({ destination, isPopular = false }: Dest
       <div className="absolute inset-0 z-20 flex flex-col justify-end p-5">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-1.5">
-            <h3 className="text-white font-semibold text-lg leading-tight line-clamp-1 drop-shadow-md">
+            <h3 className="text-white font-semibold text-base sm:text-lg leading-tight line-clamp-1 drop-shadow-md">
               {destination.title}
             </h3>
             

@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { Destination, Category, Database } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { cache } from 'react'
 
 interface GetDestinationsParams {
   search?: string
@@ -11,8 +12,9 @@ interface GetDestinationsParams {
   limit?: number
 }
 
-// Mengambil semua destinasi wisata
-export async function getDestinations(params?: GetDestinationsParams) {
+// Cached internal implementation for fetching destinations (omitting facilities and tips_and_rules)
+const fetchDestinationsCached = cache(async (paramsKey: string) => {
+  const params: GetDestinationsParams = JSON.parse(paramsKey)
   const supabase = await createClient()
 
   const search = params?.search || ''
@@ -26,7 +28,18 @@ export async function getDestinations(params?: GetDestinationsParams) {
   let query = supabase
     .from('destinations')
     .select(`
-      *,
+      id,
+      category_id,
+      title,
+      description,
+      price,
+      operational_hours,
+      latitude,
+      longitude,
+      images,
+      is_popular,
+      created_at,
+      map_url,
       categories!inner (
         id,
         name,
@@ -52,16 +65,33 @@ export async function getDestinations(params?: GetDestinationsParams) {
   }
 
   return { data, count: count || 0 }
+})
+
+// Mengambil semua destinasi wisata
+export async function getDestinations(params?: GetDestinationsParams) {
+  const key = JSON.stringify(params || {})
+  return fetchDestinationsCached(key)
 }
 
-// Mengambil destinasi unggulan (is_popular = true)
-export async function getPopularDestinations() {
+// Cached internal implementation for popular destinations
+const fetchPopularDestinationsCached = cache(async () => {
   const supabase = await createClient()
 
   const { data, error } = await supabase
     .from('destinations')
     .select(`
-      *,
+      id,
+      category_id,
+      title,
+      description,
+      price,
+      operational_hours,
+      latitude,
+      longitude,
+      images,
+      is_popular,
+      created_at,
+      map_url,
       categories (
         id,
         name,
@@ -70,7 +100,7 @@ export async function getPopularDestinations() {
     `)
     .eq('is_popular', true)
     .order('created_at', { ascending: false })
-    .limit(5)
+    .limit(15)
 
   if (error) {
     console.error('Error fetching popular destinations:', error)
@@ -78,10 +108,15 @@ export async function getPopularDestinations() {
   }
 
   return { data }
+})
+
+// Mengambil destinasi unggulan (is_popular = true)
+export async function getPopularDestinations() {
+  return fetchPopularDestinationsCached()
 }
 
-// Mengambil satu destinasi berdasarkan ID
-export async function getDestinationById(id: string) {
+// Cached internal implementation for destination by ID (detail page, fetch everything including facilities and tips_and_rules)
+const fetchDestinationByIdCached = cache(async (id: string) => {
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -103,10 +138,15 @@ export async function getDestinationById(id: string) {
   }
 
   return { data }
+})
+
+// Mengambil satu destinasi berdasarkan ID
+export async function getDestinationById(id: string) {
+  return fetchDestinationByIdCached(id)
 }
 
-// Mengambil semua kategori
-export async function getCategories() {
+// Cached internal implementation for categories
+const fetchCategoriesCached = cache(async () => {
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -120,11 +160,40 @@ export async function getCategories() {
   }
 
   return { data }
+})
+
+// Mengambil semua kategori
+export async function getCategories() {
+  return fetchCategoriesCached()
 }
 
-// Mutations untuk Kategori
-export async function createCategory(data: Database['public']['Tables']['categories']['Insert']) {
+// Helper kemanan: Verifikasi autentikasi admin sebelum mutasi data
+async function verifyAdminAuth() {
   const supabase = await createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) {
+    return { authorized: false, supabase }
+  }
+  return { authorized: true, supabase }
+}
+
+// Helper sanitasi URL aman
+function sanitizeMapUrl(url?: string | null): string | null {
+  if (!url || !url.trim()) return null
+  const trimmed = url.trim()
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed
+  }
+  return `https://${trimmed}`
+}
+
+// Mutations untuk Kategori (Dilindungi Autentikasi Admin)
+export async function createCategory(data: Database['public']['Tables']['categories']['Insert']) {
+  const { authorized, supabase } = await verifyAdminAuth()
+  if (!authorized) {
+    return { error: 'Akses ditolak: Harap login sebagai admin.' }
+  }
+
   const { error } = await supabase.from('categories').insert([data] as any)
   if (error) {
     console.error('Error creating category:', error)
@@ -137,7 +206,11 @@ export async function createCategory(data: Database['public']['Tables']['categor
 }
 
 export async function deleteCategory(id: string) {
-  const supabase = await createClient()
+  const { authorized, supabase } = await verifyAdminAuth()
+  if (!authorized) {
+    return { error: 'Akses ditolak: Harap login sebagai admin.' }
+  }
+
   const { error } = await supabase.from('categories').delete().eq('id', id)
   if (error) {
     console.error('Error deleting category:', error)
@@ -149,29 +222,52 @@ export async function deleteCategory(id: string) {
   return { success: true }
 }
 
-// Mutations untuk Destinasi
+// Mutations untuk Destinasi (Dilindungi Autentikasi Admin & Sanitasi URL)
 export async function createDestination(data: Database['public']['Tables']['destinations']['Insert']) {
-  const supabase = await createClient()
-  const { error } = await supabase.from('destinations').insert([data] as any)
+  const { authorized, supabase } = await verifyAdminAuth()
+  if (!authorized) {
+    return { error: 'Akses ditolak: Harap login sebagai admin.' }
+  }
+
+  const sanitizedData = {
+    ...data,
+    map_url: sanitizeMapUrl(data.map_url)
+  }
+
+  const { error } = await supabase.from('destinations').insert([sanitizedData] as any)
   if (error) {
     console.error('Error creating destination:', error)
     return { error: error.message || 'Gagal menambahkan destinasi.' }
   }
   revalidatePath('/')
+  revalidatePath('/home')
+  revalidatePath('/destinasi')
   revalidatePath('/peta')
   revalidatePath('/admin')
   return { success: true }
 }
 
 export async function updateDestination(id: string, data: Database['public']['Tables']['destinations']['Update']) {
-  const supabase = await createClient()
+  const { authorized, supabase } = await verifyAdminAuth()
+  if (!authorized) {
+    return { error: 'Akses ditolak: Harap login sebagai admin.' }
+  }
+
+  const sanitizedData = {
+    ...data,
+    map_url: sanitizeMapUrl(data.map_url),
+    updated_at: new Date().toISOString()
+  }
+
   // @ts-ignore
-  const { error } = await supabase.from('destinations').update({ ...data, updated_at: new Date().toISOString() } as any).eq('id', id)
+  const { error } = await supabase.from('destinations').update(sanitizedData as any).eq('id', id)
   if (error) {
     console.error('Error updating destination:', error)
     return { error: error.message || 'Gagal mengubah destinasi.' }
   }
   revalidatePath('/')
+  revalidatePath('/home')
+  revalidatePath('/destinasi')
   revalidatePath('/peta')
   revalidatePath('/admin')
   revalidatePath(`/wisata/${id}`)
@@ -179,14 +275,21 @@ export async function updateDestination(id: string, data: Database['public']['Ta
 }
 
 export async function deleteDestination(id: string) {
-  const supabase = await createClient()
+  const { authorized, supabase } = await verifyAdminAuth()
+  if (!authorized) {
+    return { error: 'Akses ditolak: Harap login sebagai admin.' }
+  }
+
   const { error } = await supabase.from('destinations').delete().eq('id', id)
   if (error) {
     console.error('Error deleting destination:', error)
     return { error: 'Gagal menghapus destinasi.' }
   }
   revalidatePath('/')
+  revalidatePath('/home')
+  revalidatePath('/destinasi')
   revalidatePath('/peta')
   revalidatePath('/admin')
   return { success: true }
 }
+

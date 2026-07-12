@@ -68,3 +68,10 @@ supabase/functions/.env
 *.mjs.tmp
 test-*.mjs
 test-*.js
+
+# Laporan audit lokal
+Audit_Performa_dan_Keamanan_Tianyar.pdf
+*.pdf
+
+# Folder setelan agen AI lokal
+.agents/

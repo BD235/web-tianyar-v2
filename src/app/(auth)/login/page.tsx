@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useRef, KeyboardEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Eye, EyeOff, ChevronLeft, Loader2 } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, ChevronLeft, Loader2 } from 'lucide-react'
 import { loginAction, verifyOtpAction, resendOtpAction } from '@/actions/auth.actions'
 import { useRouter } from 'next/navigation'
 
@@ -97,13 +97,18 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 relative">
-      {/* Tombol kembali */}
-      <button
-        onClick={() => (step === 'verify' ? setStep('login') : router.push('/'))}
-        className="absolute top-8 left-8 p-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition"
-      >
-        <ChevronLeft className="w-5 h-5 text-gray-700" />
-      </button>
+      {/* Tombol kembali - rata kiri persis sejajar batas logo di beranda (fixed viewport container) */}
+      <div className="fixed top-3 left-0 right-0 z-50 pointer-events-none h-[64px]">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 w-full h-full flex items-center justify-start">
+          <button
+            onClick={() => (step === 'verify' ? setStep('login') : router.push('/'))}
+            className="pointer-events-auto p-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 transition"
+            aria-label="Kembali"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-700" />
+          </button>
+        </div>
+      </div>
 
       <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-sm">
         <AnimatePresence mode="wait">
@@ -130,7 +135,7 @@ export default function LoginPage() {
 
               <form onSubmit={handleLogin} className="space-y-5">
                 <div className="space-y-1.5">
-                  <label className="text-sm text-gray-600 ml-1">Email</label>
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Email</label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                       <Mail className="w-5 h-5" />
@@ -140,7 +145,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Masukkan email"
-                      className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none text-gray-900"
+                      className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none text-sm text-gray-900 placeholder:text-gray-400"
                       required
                       disabled={isPending}
                     />
@@ -148,14 +153,17 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm text-gray-600 ml-1">Password</label>
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Password</label>
                   <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <Lock className="w-5 h-5" />
+                    </div>
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Masukkan password"
-                      className="w-full pl-4 pr-11 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none text-gray-900"
+                      className="w-full pl-11 pr-11 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none text-sm text-gray-900 placeholder:text-gray-400"
                       required
                       disabled={isPending}
                     />

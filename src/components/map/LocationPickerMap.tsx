@@ -47,6 +47,7 @@ function MapUpdater({ position }: { position: {lat: number, lng: number} | null 
 
 export default function LocationPickerMap({ onLocationSelect, position }: LocationPickerMapProps) {
   const [mounted, setMounted] = useState(false)
+  const [mapKey] = useState(() => `leaflet-map-${Date.now()}`)
 
   useEffect(() => {
     setMounted(true)
@@ -62,6 +63,7 @@ export default function LocationPickerMap({ onLocationSelect, position }: Locati
   return (
     <div className="w-full h-full relative z-0">
       <MapContainer
+        key={mapKey}
         center={position && !isNaN(position.lat) && !isNaN(position.lng) ? [position.lat, position.lng] : defaultCenter}
         zoom={14}
         minZoom={9}

@@ -15,7 +15,7 @@ export default async function MainLayout({
   const isAdminAuth = !!user;
 
   return (
-    <div className="flex flex-col min-h-screen relative pb-24 md:pb-0 pt-0 md:pt-28">
+    <div className="flex flex-col min-h-screen relative pt-0 md:pt-28">
       {/* Logo Kiri Atas */}
       <TopLogo />
 

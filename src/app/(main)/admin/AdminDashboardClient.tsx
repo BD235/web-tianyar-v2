@@ -52,100 +52,119 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
   }
 
   return (
-    <main className="min-h-screen px-6 py-8 max-w-7xl mx-auto pb-32 space-y-8">
+    <main className="min-h-screen px-6 pt-[30px] pb-8 max-w-7xl mx-auto pb-32 space-y-8">
 
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-sm text-gray-400">Kelola seluruh data wisata Tianyar</p>
-        </div>
+      {/* Header Admin — mobile & desktop */}
+      <div className="w-full">
+        <div className="flex items-start justify-between">
+          {/* Mobile header */}
+          <div className="md:hidden">
+            <p className="text-xs font-medium text-gray-400 mb-0.5">Admin</p>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-tight">
+              Tianyar
+            </h1>
+          </div>
+          {/* Desktop header */}
+          <div className="hidden md:block">
+            <h1 className="text-2xl font-semibold text-gray-900">Admin Panel</h1>
+            <p className="text-sm text-gray-400">Kelola seluruh data wisata Tianyar</p>
+          </div>
 
-        {/* Tambah Baru Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition shadow-md shadow-blue-200"
-          >
-            <Plus className="w-4 h-4" />
-            Tambah
-          </button>
-
-          {dropdownOpen && (
-            <>
-              {/* Overlay to close dropdown */}
-              <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-              <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-20 min-w-max">
-                <Link
-                  href="/admin/form"
-                  className="flex items-center gap-3 px-5 py-4 hover:bg-blue-50/50 transition group"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <MapPin className="w-5 h-5 text-blue-600 stroke-[1.25] group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Destinasi</span>
-                </Link>
-                <div className="h-px bg-gray-100 mx-4" />
-                <Link
-                  href="/admin/kategori"
-                  className="flex items-center gap-3 px-5 py-4 hover:bg-amber-50/50 transition group"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <Tag className="w-5 h-5 text-amber-600 stroke-[1.25] group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Kategori</span>
-                </Link>
-              </div>
-            </>
-          )}
+          {/* Lokasi kanan — mobile only */}
+          <div className="md:hidden flex items-center gap-1 mt-1">
+            <MapPin className="w-3 h-3 text-blue-500 shrink-0" />
+            <span className="text-xs text-gray-500 whitespace-nowrap">Tianyar, Bali</span>
+          </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
-          <MapPin className="w-8 h-8 text-blue-600 stroke-[1.25]" />
+      {/* Stats Cards — mobile: 2x2, tablet+: 4 kolom */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2.5">
+          <MapPin className="w-6 h-6 md:w-8 md:h-8 text-blue-600 stroke-[1.25]" />
           <div>
-            <p className="text-3xl font-semibold text-gray-900">{destinations.length}</p>
-            <p className="text-sm font-semibold text-gray-500 mt-1">Total Destinasi</p>
+            <p className="text-2xl md:text-3xl font-semibold text-gray-900">{destinations.length}</p>
+            <p className="text-xs md:text-sm font-medium text-gray-500 mt-0.5">Total Destinasi</p>
           </div>
         </div>
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
-          <Layers className="w-8 h-8 text-amber-600 stroke-[1.25]" />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2.5">
+          <Layers className="w-6 h-6 md:w-8 md:h-8 text-amber-600 stroke-[1.25]" />
           <div>
-            <p className="text-3xl font-semibold text-gray-900">{categories.length}</p>
-            <p className="text-sm font-semibold text-gray-500 mt-1">Total Kategori</p>
+            <p className="text-2xl md:text-3xl font-semibold text-gray-900">{categories.length}</p>
+            <p className="text-xs md:text-sm font-medium text-gray-500 mt-0.5">Total Kategori</p>
           </div>
         </div>
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
-          <Star className="w-8 h-8 text-yellow-500 stroke-[1.25]" />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2.5">
+          <Star className="w-6 h-6 md:w-8 md:h-8 text-yellow-500 stroke-[1.25]" />
           <div>
-            <p className="text-3xl font-semibold text-gray-900">{destinations.filter(d => d.is_popular).length}</p>
-            <p className="text-sm font-semibold text-gray-500 mt-1">Wisata Populer</p>
+            <p className="text-2xl md:text-3xl font-semibold text-gray-900">{destinations.filter(d => d.is_popular).length}</p>
+            <p className="text-xs md:text-sm font-medium text-gray-500 mt-0.5">Wisata Populer</p>
           </div>
         </div>
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
-          <BarChart3 className="w-8 h-8 text-green-600 stroke-[1.25]" />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2.5">
+          <BarChart3 className="w-6 h-6 md:w-8 md:h-8 text-green-600 stroke-[1.25]" />
           <div>
-            <p className="text-3xl font-semibold text-gray-900">{destinations.filter(d => d.price === 0 || !d.price).length}</p>
-            <p className="text-sm font-semibold text-gray-500 mt-1">Wisata Gratis</p>
+            <p className="text-2xl md:text-3xl font-semibold text-gray-900">{destinations.filter(d => d.price === 0 || !d.price).length}</p>
+            <p className="text-xs md:text-sm font-medium text-gray-500 mt-0.5">Wisata Gratis</p>
           </div>
         </div>
       </div>
 
 
       {/* Destinations Table */}
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         {/* Table Header */}
-        <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="font-bold text-gray-900">Daftar Destinasi Wisata</h2>
-          <div className="relative w-full sm:w-auto">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Cari destinasi..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition w-full sm:w-64"
-            />
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h2 className="text-sm sm:text-base font-semibold text-gray-900">Daftar Destinasi Wisata</h2>
+          
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            <div className="relative flex-1 sm:flex-none sm:w-64">
+              <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari destinasi..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8 sm:pl-9 pr-3 sm:pr-4 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition w-full"
+              />
+            </div>
+
+            {/* Tombol Tambah — di samping kolom cari destinasi */}
+            <div className="relative shrink-0">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-xl font-semibold text-xs sm:text-sm transition shadow-sm"
+                title="Tambah"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Tambah</span>
+              </button>
+
+              {dropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-[180px]">
+                    <Link
+                      href="/admin/form"
+                      className="flex items-center gap-3 px-4 py-3.5 hover:bg-blue-50/50 transition group"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <MapPin className="w-4 h-4 text-blue-600 stroke-[1.25] group-hover:scale-110 transition-transform shrink-0" />
+                      <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Destinasi</span>
+                    </Link>
+                    <div className="h-px bg-gray-100 mx-3" />
+                    <Link
+                      href="/admin/kategori"
+                      className="flex items-center gap-3 px-4 py-3.5 hover:bg-amber-50/50 transition group"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <Tag className="w-4 h-4 text-amber-600 stroke-[1.25] group-hover:scale-110 transition-transform shrink-0" />
+                      <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Kategori</span>
+                    </Link>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -154,36 +173,45 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
           <table className="w-full">
             <thead className="bg-gray-50/70">
               <tr>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Nama Destinasi</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Kategori</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3 hidden sm:table-cell">Harga</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3 hidden md:table-cell">Status</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3 hidden lg:table-cell">Ditambahkan</th>
-                <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Aksi</th>
+                <th className="text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 sm:px-6 py-2.5 sm:py-3">Nama Destinasi</th>
+                <th className="text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 sm:px-6 py-2.5 sm:py-3">Kategori</th>
+                <th className="text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 sm:px-6 py-2.5 sm:py-3 hidden sm:table-cell">Harga</th>
+                <th className="text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 sm:px-6 py-2.5 sm:py-3 hidden md:table-cell">Status</th>
+                <th className="text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 sm:px-6 py-2.5 sm:py-3 hidden lg:table-cell">Ditambahkan</th>
+                <th className="text-right text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 sm:px-6 py-2.5 sm:py-3">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filtered.map((dest) => (
                 <tr key={dest.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
-                        <MapPin className="w-4 h-4 text-blue-600" />
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <div
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-cover bg-center shrink-0 border border-gray-200/80 shadow-sm bg-gray-100 flex items-center justify-center overflow-hidden"
+                        style={{
+                          backgroundImage: dest.images && dest.images.length > 0 && dest.images[0]
+                            ? `url('${dest.images[0]}')`
+                            : undefined
+                        }}
+                      >
+                        {(!dest.images || dest.images.length === 0 || !dest.images[0]) && (
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                        )}
                       </div>
-                      <span className="font-semibold text-gray-900 text-sm">{dest.title}</span>
+                      <span className="font-semibold text-gray-900 text-xs sm:text-sm line-clamp-1">{dest.title}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="text-xs font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
+                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">
                       {dest.categories?.name || dest.category || 'Tanpa Kategori'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 hidden sm:table-cell">
-                    <span className={`text-sm font-medium ${dest.price === 0 || !dest.price ? 'text-green-600' : 'text-gray-700'}`}>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
+                    <span className={`text-xs sm:text-sm font-medium ${dest.price === 0 || !dest.price ? 'text-green-600' : 'text-gray-700'}`}>
                       {formatPrice(dest.price)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 hidden md:table-cell">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 hidden md:table-cell">
                     {dest.is_popular ? (
                       <span className="flex items-center gap-1.5 text-xs font-semibold text-yellow-700 bg-yellow-100 px-2.5 py-1 rounded-full w-fit">
                         <Star className="w-3 h-3" />
@@ -193,24 +221,24 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
                       <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">Biasa</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 hidden lg:table-cell">
-                    <div className="flex items-center gap-1.5 text-sm text-gray-400">
-                      <Clock className="w-3.5 h-3.5" />
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 hidden lg:table-cell">
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400">
+                      <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       {new Date(dest.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 justify-end">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
+                    <div className="flex items-center gap-1 sm:gap-2 justify-end">
                       <Link href={`/admin/form?id=${dest.id}`}>
-                        <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition" title="Edit">
-                          <Pencil className="w-4 h-4" />
+                        <button className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg sm:rounded-xl transition" title="Edit">
+                          <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                       </Link>
-                      <button 
+                      <button
                         onClick={() => setDeleteId(dest.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition" title="Hapus"
+                        className="p-1.5 sm:p-2 text-red-500 hover:bg-red-50 rounded-lg sm:rounded-xl transition" title="Hapus"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </td>
@@ -218,7 +246,7 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-400 text-sm">
+                  <td colSpan={6} className="text-center py-10 sm:py-12 text-gray-400 text-xs sm:text-sm">
                     Tidak ada destinasi yang sesuai pencarian.
                   </td>
                 </tr>
@@ -226,8 +254,8 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
             </tbody>
           </table>
         </div>
-        <div className="px-6 py-4 border-t border-gray-100">
-          <p className="text-sm text-gray-400">Menampilkan {filtered.length} dari {destinations.length} destinasi</p>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100">
+          <p className="text-xs sm:text-sm text-gray-400">Menampilkan {filtered.length} dari {destinations.length} destinasi</p>
         </div>
       </div>
 

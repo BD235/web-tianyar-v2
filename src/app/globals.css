@@ -1,18 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-  /* Mengatur font utama (sans) menjadi Montserrat */
+  /* Font utama */
   --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
-  
-  /* Menambahkan custom class untuk font logo (bisa dipanggil dengan class `font-logo`) */
   --font-logo: var(--font-kaushan), cursive;
+
+  /* Custom breakpoints mobile (Chrome DevTools standar) */
+  --breakpoint-mob-l: 26.5625rem;
+  /* 425px = Mobile L — patokan utama tampilan */
 }
 
 @layer base {
   * {
     @apply border-gray-200;
   }
+
   body {
     @apply bg-slate-50 text-slate-900;
   }
+}
+
+/* Infinite marquee scroll untuk fasilitas */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 18s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

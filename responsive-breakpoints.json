@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "description": "Breakpoint responsif standar Chrome DevTools — digunakan sebagai acuan AI saat membuat atau menyesuaikan layout halaman.",
+  "note": "Semua nilai dalam satuan px (CSS pixels). Gunakan breakpoint ini sebagai panduan utama untuk menentukan ukuran font, spacing, dan tata letak.",
+
+  "breakpoints": {
+    "mobile_s": {
+      "label": "Mobile S",
+      "width": 320,
+      "tailwind_prefix": null,
+      "notes": "Layar HP sangat kecil (iPhone 5/SE lama). Prioritaskan konten paling penting, font minimal 12px, padding minimal."
+    },
+    "mobile_m": {
+      "label": "Mobile M",
+      "width": 375,
+      "tailwind_prefix": null,
+      "notes": "Ukuran standar smartphone modern (iPhone 12/13 mini, Pixel 5). Ini adalah TARGET UTAMA desain mobile-first proyek ini."
+    },
+    "mobile_l": {
+      "label": "Mobile L",
+      "width": 425,
+      "tailwind_prefix": null,
+      "notes": "Layar HP besar (iPhone Plus, Android flagship). Sedikit lebih longgar dari M, tapi masih single-column."
+    },
+    "tablet": {
+      "label": "Tablet",
+      "width": 768,
+      "tailwind_prefix": "md",
+      "notes": "iPad, tablet Android. Layout bisa mulai 2-column. Tailwind breakpoint: md: (≥768px)."
+    },
+    "laptop": {
+      "label": "Laptop",
+      "width": 1024,
+      "tailwind_prefix": "lg",
+      "notes": "Laptop standar. Layout lebih lebar, sidebar bisa muncul. Tailwind breakpoint: lg: (≥1024px)."
+    },
+    "laptop_l": {
+      "label": "Laptop L",
+      "width": 1440,
+      "tailwind_prefix": "xl",
+      "notes": "Laptop layar besar / monitor FHD. Tailwind breakpoint: xl: (≥1280px) — gunakan max-w untuk membatasi lebar konten."
+    }
+  },
+
+  "tailwind_breakpoints": {
+    "sm": "640px",
+    "md": "768px",
+    "lg": "1024px",
+    "xl": "1280px",
+    "2xl": "1536px"
+  },
+
+  "design_rules": {
+    "primary_target": "mobile_m (375px) — semua desain harus tampil sempurna di lebar 375px lebih dahulu",
+    "container_max_width": {
+      "mobile": "max-w-md (448px) — batasi container di mobile",
+      "tablet": "max-w-2xl (672px)",
+      "laptop": "max-w-4xl (896px) atau max-w-5xl (1024px)"
+    },
+    "font_scale": {
+      "mobile_s": "base font 13px, heading 18-20px",
+      "mobile_m": "base font 14px, heading 20-22px",
+      "tablet": "base font 15px, heading 24-28px",
+      "laptop": "base font 16px, heading 28-36px"
+    },
+    "spacing_scale": {
+      "mobile": "px-4 sm:px-5, gap-3 sm:gap-4",
+      "tablet": "px-6 md:px-8, gap-4 md:gap-6",
+      "laptop": "px-8 lg:px-12, gap-6 lg:gap-8"
+    },
+    "image_aspect_ratio": {
+      "mobile_hero": "aspect-[4/4.5] — portrait, mengisi layar mobile dengan baik",
+      "tablet_hero": "aspect-[16/9] — landscape untuk layar lebar",
+      "laptop_hero": "h-[450px] — fixed height"
+    }
+  }
+}

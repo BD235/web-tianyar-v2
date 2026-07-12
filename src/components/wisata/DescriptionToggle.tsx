@@ -14,21 +14,28 @@ export default function DescriptionToggle({ text }: DescriptionToggleProps) {
   if (!text) return null
 
   const shouldTruncate = text.length > maxLength
-  const displayText = shouldTruncate && !isExpanded ? text.slice(0, maxLength) + ' ....' : text
 
   return (
-    <div className="space-y-2">
-      <p className="text-gray-600 text-sm md:text-base leading-relaxed text-justify">
-        {displayText}
+    <div className="w-full">
+      {/* line-clamp-4: potong tepat di baris ke-4, tidak tumpang tindih dengan tombol */}
+      <p className={`text-gray-600 text-sm leading-relaxed text-justify ${shouldTruncate && !isExpanded ? 'line-clamp-4' : ''}`}>
+        {text}
       </p>
+
       {shouldTruncate && (
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1 transition-colors"
+          style={{ width: 'fit-content', maxWidth: '100%' }}
+          className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors"
         >
-          <span>{isExpanded ? 'Show less' : 'Read more'}</span>
-          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          <span className="whitespace-nowrap">
+            {isExpanded ? 'Show less' : 'Read more'}
+          </span>
+          {isExpanded
+            ? <ChevronUp className="w-4 h-4 shrink-0" />
+            : <ChevronDown className="w-4 h-4 shrink-0" />
+          }
         </button>
       )}
     </div>

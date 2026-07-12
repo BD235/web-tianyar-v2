@@ -14,6 +14,15 @@ const MapComponent = dynamic(() => import('./MapComponent'), {
   )
 })
 
-export default function MapWrapper({ destinations, className }: { destinations: Destination[], className?: string }) {
-  return <MapComponent destinations={destinations} className={className} />
+export default function MapWrapper({ 
+  destinations, 
+  className,
+  frameless = false
+}: { 
+  destinations: Destination[]
+  className?: string
+  frameless?: boolean
+}) {
+  return <MapComponent destinations={destinations} className={className} frameless={frameless} />
 }
+

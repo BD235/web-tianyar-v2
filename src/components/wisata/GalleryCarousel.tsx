@@ -12,7 +12,7 @@ export default function GalleryCarousel({
   images,
   placeholderColors = ['bg-[#C4C8CC]', 'bg-[#8E9399]', 'bg-[#585D63]', 'bg-[#374151]'],
 }: GalleryCarouselProps) {
-  // Ambil maksimal 5 gambar, minimal 1 (jika kosong pakai placeholder agar tampilan tetap bagus)
+  // Ambil 1-5 gambar
   const actualImages = images && images.length > 0 ? images.slice(0, 5) : []
 
   const displayItems =
@@ -49,7 +49,7 @@ export default function GalleryCarousel({
 
   return (
     <div className="w-full">
-      {/* Carousel Container */}
+
       <div
         className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[16/8] lg:aspect-[21/9] rounded-2xl mob-l:rounded-3xl overflow-hidden bg-gray-100 border border-gray-200/60 shadow-sm select-none"
         onTouchStart={handleTouchStart}
@@ -94,7 +94,6 @@ export default function GalleryCarousel({
           ))}
         </div>
 
-        {/* Titik di Tengah Bawah Gambar (Jika Lebih dari 1) */}
         {total > 1 && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full z-10">
             {displayItems.map((_, idx) => {
@@ -117,7 +116,6 @@ export default function GalleryCarousel({
         )}
       </div>
 
-      {/* Lightbox Modal */}
       {lightboxOpen && (
         <div
           className="fixed inset-0 bg-black/95 z-[150] flex flex-col items-center justify-center p-4 animate-fade-in"

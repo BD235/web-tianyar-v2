@@ -54,23 +54,21 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
   return (
     <main className="min-h-screen px-6 pt-[30px] pb-8 max-w-7xl mx-auto pb-32 space-y-8">
 
-      {/* Header Admin — mobile & desktop */}
       <div className="w-full">
         <div className="flex items-start justify-between">
-          {/* Mobile header */}
+
           <div className="md:hidden">
             <p className="text-xs font-medium text-gray-400 mb-0.5">Admin</p>
             <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-tight">
               Tianyar
             </h1>
           </div>
-          {/* Desktop header */}
+
           <div className="hidden md:block">
             <h1 className="text-2xl font-semibold text-gray-900">Admin Panel</h1>
             <p className="text-sm text-gray-400">Kelola seluruh data wisata Tianyar</p>
           </div>
 
-          {/* Lokasi kanan — mobile only */}
           <div className="md:hidden flex items-center gap-1 mt-1">
             <MapPin className="w-3 h-3 text-blue-500 shrink-0" />
             <span className="text-xs text-gray-500 whitespace-nowrap">Tianyar, Bali</span>
@@ -78,7 +76,6 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
         </div>
       </div>
 
-      {/* Stats Cards — mobile: 2x2, tablet+: 4 kolom */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2.5">
           <MapPin className="w-6 h-6 md:w-8 md:h-8 text-blue-600 stroke-[1.25]" />
@@ -110,13 +107,11 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
         </div>
       </div>
 
-
-      {/* Destinations Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* Table Header */}
+
         <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h2 className="text-sm sm:text-base font-semibold text-gray-900">Daftar Destinasi Wisata</h2>
-          
+
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
             <div className="relative flex-1 sm:flex-none sm:w-64">
               <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -129,7 +124,6 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
               />
             </div>
 
-            {/* Tombol Tambah — di samping kolom cari destinasi */}
             <div className="relative shrink-0">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -168,7 +162,6 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
           </div>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50/70">
@@ -259,7 +252,7 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
         </div>
       </div>
 
-      <ConfirmDialog 
+      <ConfirmDialog
         isOpen={!!deleteId}
         title="Hapus Destinasi"
         message="Apakah Anda yakin ingin menghapus destinasi ini? Data yang dihapus tidak dapat dikembalikan."

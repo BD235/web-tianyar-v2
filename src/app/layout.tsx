@@ -2,13 +2,11 @@ import type { Metadata } from "next";
 import { Montserrat, Kaushan_Script } from "next/font/google";
 import "./globals.css";
 
-// Setup font Montserrat untuk teks utama (judul, subjudul, teks)
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
 });
 
-// Setup font Kaushan Script untuk logo
 const kaushan = Kaushan_Script({
   weight: "400",
   subsets: ["latin"],

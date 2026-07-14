@@ -20,12 +20,12 @@ export default function LanguageSwitcher() {
 
   if (!mounted) return null;
 
-  // Sembunyikan tombol ganti bahasa untuk sementara di semua perangkat sesuai permintaan
+  // Sembunyikan tombol ganti bahasa
   return null;
 
   return (
     <>
-      {/* 1. KHUSUS LAPTOP/DESKTOP (>= 768px): Di atas kanan lengkap dengan teks */}
+
       <div className="fixed top-3 left-0 right-0 z-50 pointer-events-none h-[64px] hidden md:block">
         <div className="max-w-7xl mx-auto px-6 w-full h-full flex items-center justify-end">
           <button
@@ -41,7 +41,6 @@ export default function LanguageSwitcher() {
         </div>
       </div>
 
-      {/* 2. KHUSUS MOBILE (< 768px): Di kanan bawah di atas navbar, menampilkan teks EN / ID */}
       <div className="fixed bottom-24 right-5 z-50 md:hidden">
         <button
           onClick={toggleLanguage}

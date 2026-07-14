@@ -5,7 +5,6 @@ export default function Footer() {
     return (
         <footer className="w-full pt-6 mob-m:pt-7 mob-l:pt-8 pb-24 sm:py-12 mt-auto bg-white flex flex-col items-center justify-center gap-4 mob-m:gap-5 mob-l:gap-6 border-t border-slate-100">
 
-            {/* Kumpulan Ikon Kontak/Sosmed */}
             <div className="flex items-center gap-3 mob-m:gap-4">
                 <Link
                     href="#"
@@ -32,7 +31,6 @@ export default function Footer() {
                 </Link>
             </div>
 
-            {/* Teks Copyright */}
             <p className="text-xs mob-m:text-[13px] sm:text-sm text-slate-800 font-medium text-center px-4">
                 ©2026 WisataTianyar. All rights reserved.
             </p>

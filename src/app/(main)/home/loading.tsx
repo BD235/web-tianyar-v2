@@ -1,7 +1,7 @@
 export default function HomeLoading() {
   return (
     <main className="min-h-screen px-6 py-8 max-w-7xl mx-auto space-y-12 pb-32 animate-pulse">
-      {/* Search & Categories Skeleton */}
+
       <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
         <div className="w-full lg:w-[400px] h-12 bg-gray-200 rounded-full shrink-0" />
         <div className="flex gap-2 overflow-hidden w-full lg:w-auto">
@@ -11,7 +11,6 @@ export default function HomeLoading() {
         </div>
       </section>
 
-      {/* Popular Section Skeleton */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="h-6 w-32 bg-gray-200 rounded-md" />
@@ -27,7 +26,6 @@ export default function HomeLoading() {
         </div>
       </section>
 
-      {/* All Destinations Skeleton */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="h-6 w-24 bg-gray-200 rounded-md" />
@@ -43,7 +41,6 @@ export default function HomeLoading() {
         </div>
       </section>
 
-      {/* Map Skeleton */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="h-6 w-20 bg-gray-200 rounded-md" />

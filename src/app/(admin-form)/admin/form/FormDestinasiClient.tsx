@@ -93,10 +93,10 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
       const supabase = createClient()
       let uploadedUrls: string[] = []
 
-      // Upload new images
+      // Unggah gambar baru
       if (imageFiles.length > 0) {
         setIsUploadingImages(true)
-        const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+        const MAX_SIZE = 5 * 1024 * 1024 // Batas 5MB
         const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
 
         for (const file of imageFiles) {
@@ -160,7 +160,7 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
   return (
       <main className="min-h-screen pt-[70px] md:pt-[90px] pb-32 px-4 md:px-6 max-w-7xl mx-auto flex items-start justify-center w-full">
         <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 md:border-gray-200 w-full max-w-3xl relative flex flex-col">
-          {/* Header — tidak sticky di mana pun */}
+
           <div className="px-4 sm:px-6 py-4 md:py-6 border-b border-gray-100 flex items-center justify-between rounded-t-2xl md:rounded-t-3xl bg-white z-40 shadow-sm">
             <div className="flex items-center gap-3">
               <Link href="/admin">
@@ -174,7 +174,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               </div>
             </div>
 
-            {/* Desktop Save Button */}
             <button
               onClick={handleSave}
               disabled={isPending}
@@ -185,10 +184,8 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
             </button>
           </div>
 
-          {/* Form Content */}
           <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 relative">
 
-            {/* Nama Tempat */}
             <div className="space-y-1.5">
               <label className="text-xs sm:text-sm font-semibold text-gray-700">Nama Tempat Wisata</label>
               <input
@@ -200,7 +197,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               />
             </div>
 
-            {/* Deskripsi — dipindah tepat di bawah Nama */}
             <div className="space-y-1.5">
               <label className="text-xs sm:text-sm font-semibold text-gray-700">Deskripsi</label>
               <textarea
@@ -212,7 +208,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               />
             </div>
 
-            {/* Kategori & Harga */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-gray-700">Kategori</label>
@@ -239,7 +234,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               </div>
             </div>
 
-            {/* Jam Operasional */}
             <div className="space-y-1.5">
               <label className="text-xs sm:text-sm font-semibold text-gray-700">Jam Operasional</label>
               <div className="grid grid-cols-2 gap-3">
@@ -264,7 +258,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               </div>
             </div>
 
-            {/* Lokasi Alamat & Peta */}
             <div className="space-y-6">
               <div className="space-y-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-gray-700">Alamat</label>
@@ -332,9 +325,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               </div>
             </div>
 
-            {/* Deskripsi sudah dipindah ke atas — bagian ini dihapus */}
-
-            {/* Fasilitas */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">Fasilitas Tersedia</label>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -365,7 +355,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               </div>
             </div>
 
-            {/* Tips & Aturan */}
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700">Tips & Aturan Kunjungan <span className="text-gray-400 font-normal">(opsional)</span></label>
               <textarea
@@ -377,7 +366,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               />
             </div>
 
-            {/* Foto Destinasi */}
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
@@ -389,7 +377,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
                 </span>
               </div>
 
-              {/* Dropzone */}
               <label className="w-full border-2 border-dashed border-blue-200 hover:border-blue-400 rounded-2xl p-5 flex flex-col items-center justify-center bg-blue-50/20 hover:bg-blue-50/40 transition-all cursor-pointer group">
                 <input
                   type="file"
@@ -424,7 +411,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
                 <p className="text-[10px] text-gray-400 mt-0.5 text-center">PNG · JPG · WEBP · maks. 5MB</p>
               </label>
 
-              {/* Previews Daftar Foto */}
               {(existingImages.length > 0 || imageFiles.length > 0) && (
                 <div className="space-y-2 pt-1">
                   <p className="text-xs font-semibold text-gray-700">Daftar Foto yang Akan Disimpan ke Database:</p>
@@ -466,8 +452,7 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
               )}
             </div>
 
-            {/* Populer Toggle */}
-            <div 
+            <div
               onClick={() => setIsPopular(!isPopular)}
               className="flex items-center justify-between bg-yellow-50 hover:bg-yellow-100/70 rounded-2xl px-5 py-4 border border-yellow-100 cursor-pointer select-none transition-colors"
             >
@@ -488,7 +473,6 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
 
           </div>
 
-          {/* Mobile Save Button — rapat di bawah toggle populer */}
           <div className="md:hidden px-4 pt-1 pb-4">
             <button
               onClick={handleSave}

@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import { Destination } from '@/types'
 
-// Load MapComponent dynamically with ssr: false inside a Client Component wrapper
+// Load MapComponent dynamic (no SSR)
 const MapComponent = dynamic(() => import('./MapComponent'), {
   ssr: false,
   loading: () => (
@@ -14,15 +14,14 @@ const MapComponent = dynamic(() => import('./MapComponent'), {
   )
 })
 
-export default function MapWrapper({ 
-  destinations, 
+export default function MapWrapper({
+  destinations,
   className,
   frameless = false
-}: { 
+}: {
   destinations: Destination[]
   className?: string
   frameless?: boolean
 }) {
   return <MapComponent destinations={destinations} className={className} frameless={frameless} />
 }
-

@@ -6,13 +6,29 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-interface MobileBottomNavProps {
-  isAdminAuth?: boolean;
-}
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-export default function MobileBottomNav({ isAdminAuth = false }: MobileBottomNavProps) {
+export default function MobileBottomNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const [isAdminAuth, setIsAdminAuth] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsAdminAuth(!!user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAdminAuth(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const navItems = [
     { href: "/home", icon: Home, label: t("home") },
@@ -20,7 +36,7 @@ export default function MobileBottomNav({ isAdminAuth = false }: MobileBottomNav
     { href: "/peta", icon: Map, label: t("maps") },
   ];
 
-  // Jika user yang login adalah admin, tambahkan menu perisai (Admin)
+  // Tambah menu admin
   if (isAdminAuth) {
     navItems.push({ href: "/admin", icon: Shield, label: t("admin") });
   }

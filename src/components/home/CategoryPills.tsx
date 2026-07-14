@@ -21,9 +21,9 @@ export default function CategoryPills({ categories = [] }: { categories?: Catego
     } else {
       params.set('category', slug)
     }
-    params.delete('page') // Reset pagination
+    params.delete('page') // Reset paginasi
 
-    // Default target is the current page, unless we are on the home/welcome page
+    // Target route default
     let targetPath = pathname
     if (pathname === '/home' || pathname === '/') {
       targetPath = '/destinasi'

@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-// Handler untuk magic link dari Supabase
-// Supabase akan redirect ke: /auth/callback?code=xxx setelah user klik link email
+// Callback OTP Supabase
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
@@ -12,11 +12,10 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      // Berhasil → redirect ke /admin
+
       return NextResponse.redirect(`${origin}/admin`)
     }
   }
 
-  // Gagal → kembali ke login
   return NextResponse.redirect(`${origin}/login`)
 }

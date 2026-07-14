@@ -9,7 +9,7 @@ export default function TipsAndRulesCard({ content }: TipsAndRulesCardProps) {
     ? content.trim()
     : 'Jaga kebersihan lingkungan.\nGunakan pakaian yang sopan & nyaman.\nPatuhi petunjuk petugas di lokasi.'
 
-  // Pecah per baris & ambil kalimat ringkas
+  // Parsing tips per baris
   const lines = text
     .split(/\r?\n/)
     .map(line => line.trim().replace(/^[•\-\*]\s*/, ''))
@@ -17,12 +17,11 @@ export default function TipsAndRulesCard({ content }: TipsAndRulesCardProps) {
 
   return (
     <div className="w-full">
-      {/* Judul di luar frame */}
+
       <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
         Tips
       </h2>
 
-      {/* Frame dengan warna & desain senada komponen Fasilitas (bg-[#F0F3F7]) */}
       <div className="bg-[#F0F3F7] rounded-2xl mob-l:rounded-3xl p-5 mob-l:p-6">
         <div className="space-y-3">
           {lines.map((line, idx) => (

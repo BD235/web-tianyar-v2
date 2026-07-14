@@ -4,10 +4,10 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { redirect } from 'next/navigation'
 
-// Rate limiting berbasis in-memory
+// Rate limit 1 menit
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT_MAX = 5
-const RATE_LIMIT_WINDOW = 60 * 1000 // 1 menit
+const RATE_LIMIT_WINDOW = 60 * 1000
 
 function checkRateLimit(identifier: string) {
   const now = Date.now()
@@ -35,7 +35,7 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password minimal 6 karakter'),
 })
 
-// Step 1: Verifikasi email + password → kirim OTP ke email
+// Step 1: Kirim OTP
 export async function loginAction(prevState: unknown, formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
@@ -55,7 +55,6 @@ export async function loginAction(prevState: unknown, formData: FormData) {
 
   const supabase = await createClient()
 
-  // Verifikasi email + password
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
@@ -65,11 +64,9 @@ export async function loginAction(prevState: unknown, formData: FormData) {
     return { error: 'Email atau password salah.' }
   }
 
-  // ⚠️ WAJIB: sign out dulu agar sesi password dihapus.
-  // Jika tidak, user bisa masuk admin lewat refresh tanpa OTP.
+    // Sign out sesi lama sebelum OTP
   await supabase.auth.signOut()
 
-  // Kirim OTP ke email (setelah sesi bersih)
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email: parsed.data.email,
   })
@@ -82,7 +79,7 @@ export async function loginAction(prevState: unknown, formData: FormData) {
   return { success: true, email: parsed.data.email }
 }
 
-// Step 2: Verifikasi kode OTP → masuk admin
+// Step 2: Verifikasi OTP
 export async function verifyOtpAction(prevState: unknown, formData: FormData) {
   const email = formData.get('email') as string
   const token = formData.get('token') as string

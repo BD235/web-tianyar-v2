@@ -54,7 +54,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return translations[language][key as keyof typeof translations["en"]] || key;
   };
 
-  // Render children immediately to avoid layout shift, but translation might change after mount if storedLang is different
+  // Render langsung cegah layout shift
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}

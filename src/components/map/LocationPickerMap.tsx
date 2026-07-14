@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
-// Fix for default marker icon in Leaflet + Next.js
+// Leaflet marker icon fix
 const customIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -17,8 +17,8 @@ const customIcon = new L.Icon({
 })
 
 const BALI_BOUNDS: L.LatLngBoundsExpression = [
-  [-8.850, 114.400], // South West
-  [-8.050, 115.750]  // North East
+  [-8.850, 114.400],
+  [-8.050, 115.750]
 ]
 
 interface LocationPickerMapProps {
@@ -57,7 +57,7 @@ export default function LocationPickerMap({ onLocationSelect, position }: Locati
     return <div className="w-full h-full bg-gray-100 flex items-center justify-center animate-pulse"><span className="text-gray-400 font-medium">Memuat Peta...</span></div>
   }
 
-  // Tianyar center
+  // Pusat Tianyar
   const defaultCenter: L.LatLngExpression = [-8.218, 115.495]
 
   return (

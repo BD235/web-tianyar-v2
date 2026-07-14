@@ -6,7 +6,7 @@ import { Mail, Lock, Eye, EyeOff, ChevronLeft, Loader2 } from 'lucide-react'
 import { loginAction, verifyOtpAction, resendOtpAction } from '@/actions/auth.actions'
 import { useRouter } from 'next/navigation'
 
-const OTP_LENGTH = 6 // 6 digit sesuai konfigurasi Supabase
+const OTP_LENGTH = 6 // 6 digit OTP
 
 export default function LoginPage() {
   const router = useRouter()
@@ -14,19 +14,17 @@ export default function LoginPage() {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  // Login state
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  // OTP state — jumlah kotak mengikuti OTP_LENGTH
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''))
   const inputRefs = Array.from({ length: OTP_LENGTH }, () => useRef<HTMLInputElement>(null))
 
   const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return // hanya angka
+    if (!/^\d*$/.test(value)) return
     const newOtp = [...otp]
-    newOtp[index] = value.slice(-1) // ambil 1 digit terakhir
+    newOtp[index] = value.slice(-1)
     setOtp(newOtp)
     if (value && index < OTP_LENGTH - 1) inputRefs[index + 1].current?.focus()
   }
@@ -97,7 +95,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 relative">
-      {/* Tombol kembali - rata kiri persis sejajar batas logo di beranda (fixed viewport container) */}
+
       <div className="fixed top-3 left-0 right-0 z-50 pointer-events-none h-[64px]">
         <div className="max-w-7xl mx-auto px-4 md:px-6 w-full h-full flex items-center justify-start">
           <button
@@ -113,7 +111,6 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-sm">
         <AnimatePresence mode="wait">
 
-          {/* Step 1: Login */}
           {step === 'login' && (
             <motion.div
               key="login"
@@ -189,7 +186,6 @@ export default function LoginPage() {
             </motion.div>
           )}
 
-          {/* Step 2: Verifikasi OTP */}
           {step === 'verify' && (
             <motion.div
               key="verify"
@@ -213,7 +209,7 @@ export default function LoginPage() {
               )}
 
               <form onSubmit={handleVerify} className="space-y-8">
-                {/* 6 kotak OTP */}
+
                 <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
                   {otp.map((digit, index) => (
                     <input

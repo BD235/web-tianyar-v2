@@ -11,7 +11,7 @@ export default async function AdminFormLayout({
 }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/login')
   }
@@ -21,11 +21,10 @@ export default async function AdminFormLayout({
   return (
     <div className="flex flex-col min-h-screen relative pt-0 md:pt-28">
       <TopLogo />
-      <DesktopNavbar isAdminAuth={isAdminAuth} />
+      <DesktopNavbar />
       <div className="flex-1">
         {children}
       </div>
-      {/* Footer dan MobileBottomNav tidak ada di halaman form */}
     </div>
   )
 }

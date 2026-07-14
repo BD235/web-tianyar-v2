@@ -29,7 +29,7 @@ export async function updateSession(request: NextRequest) {
         cookiesToSet.forEach(({ name, value, options }) => {
           const sessionOptions = { ...options }
           delete sessionOptions.maxAge
-          delete sessionOptions.expires // Hapus juga expires
+          delete sessionOptions.expires // Hapus expires
           supabaseResponse.cookies.set(name, value, sessionOptions)
         })
       },
@@ -42,7 +42,7 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname
 
-  // Blokir akses ke /admin jika belum login
+  // Proteksi route admin
   if (path.startsWith('/admin')) {
     if (!user) {
       console.log('Tidak ada user, redirect ke /login')
@@ -52,7 +52,7 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Jika sudah login dan coba buka /login, redirect ke /admin
+  // Redirect jika sudah login
   if (path === '/login') {
     if (user) {
       const url = request.nextUrl.clone()

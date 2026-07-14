@@ -38,9 +38,8 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
   return (
     <main className="min-h-screen pt-4 mob-l:pt-6 md:pt-8 pb-4 sm:pb-12 px-3 mob-l:px-4 sm:px-6 md:px-8 max-w-xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto flex flex-col">
 
-      {/* Hero Card: foto + back button + heart */}
       <div className="relative mb-8 mob-l:mb-10 sm:mb-12">
-        {/* Photo Card */}
+
         <div className="relative w-full aspect-[4/4.5] md:aspect-[16/10] lg:aspect-[16/8] rounded-3xl overflow-hidden bg-gray-100 shadow-sm">
           {validImages.length > 0 ? (
             <img
@@ -55,7 +54,6 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
             </div>
           )}
 
-          {/* Back Button — di dalam foto, pojok kiri atas */}
           <div className="absolute top-4 left-4 z-10">
             <Link href="/destinasi">
               <button className="w-10 h-10 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-700 active:scale-95 transition-all">
@@ -65,7 +63,6 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
           </div>
         </div>
 
-        {/* Heart Button — melayang di pojok kanan bawah card, sedikit keluar */}
         <div className="absolute bottom-[-18px] right-4 z-20">
           <button className="w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center active:scale-95 transition-all">
             <Heart className="w-5 h-5 fill-red-500 text-red-500" />
@@ -73,9 +70,8 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
         </div>
       </div>
 
-      {/* Judul + Show map + Rating */}
       <div className="flex items-center justify-between gap-3 mob-l:gap-4 mb-3 mob-l:mb-4">
-        {/* Kiri: judul & rating */}
+
         <div className="flex flex-col gap-2.5 flex-1">
           <h1 className="text-[18px] mob-l:text-[22px] md:text-2xl lg:text-3xl font-bold text-gray-900 leading-snug">{dest.title}</h1>
           <div className="flex items-center gap-1 mob-l:gap-1.5 text-xs mob-l:text-sm md:text-base text-gray-500">
@@ -84,7 +80,7 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
             <span>({dest.is_popular ? '355 Reviews' : '42 Reviews'})</span>
           </div>
         </div>
-        {/* Kanan: show map — rata tengah secara vertikal */}
+
         <a
           href={mapLink}
           target="_blank"
@@ -95,12 +91,10 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
         </a>
       </div>
 
-      {/* Deskripsi */}
       <div className="mb-4 mob-l:mb-6 md:text-base">
         <DescriptionToggle text={dest.description || 'Tidak ada deskripsi untuk destinasi ini.'} />
       </div>
 
-      {/* Price & Operasional (2-Column Grid) */}
       <div className="grid grid-cols-2 gap-4 mob-l:gap-6 py-4 mob-l:py-5 mb-4 mob-l:mb-6 border-t border-b border-gray-100">
         <div>
           <p className="text-[10px] mob-l:text-xs md:text-sm font-bold mb-2 mob-l:mb-3">Price</p>
@@ -116,19 +110,16 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
         </div>
       </div>
 
-      {/* Facilities Section */}
       <div className="mb-8 sm:mb-10">
         <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Facilities</h2>
         <FacilityIcons facilities={displayFacilities} className="gap-3 sm:gap-4 justify-start" />
       </div>
 
-      {/* Galeri Section */}
       <div className="mb-8 sm:mb-10">
         <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Galeri</h2>
         <GalleryCarousel images={galleryImages} placeholderColors={placeholderColors} />
       </div>
 
-      {/* Tips dan Aturan */}
       <div className="mb-2 sm:mb-6">
         <TipsAndRulesCard content={dest.tips_and_rules} />
       </div>

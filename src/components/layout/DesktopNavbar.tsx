@@ -5,14 +5,29 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-interface DesktopNavbarProps {
-    isAdminAuth?: boolean;
-}
-
-export default function DesktopNavbar({ isAdminAuth = false }: DesktopNavbarProps) {
+export default function DesktopNavbar() {
     const pathname = usePathname();
     const { t } = useLanguage();
+    const [isAdminAuth, setIsAdminAuth] = useState(false);
+
+    useEffect(() => {
+        const supabase = createClient();
+        
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            setIsAdminAuth(!!user);
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setIsAdminAuth(!!session?.user);
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
 
     const navItems = [
         { href: "/home", icon: Home, label: t("home") },

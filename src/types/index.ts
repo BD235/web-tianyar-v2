@@ -1,4 +1,3 @@
-// src/types/index.ts
 
 export type Json =
   | string
@@ -88,6 +87,5 @@ export interface Database {
   }
 }
 
-// Helper types untuk digunakan di komponen
 export type Destination = Database['public']['Tables']['destinations']['Row']
 export type Category = Database['public']['Tables']['categories']['Row']

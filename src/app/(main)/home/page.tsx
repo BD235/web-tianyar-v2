@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 
 export default async function HomePage() {
-  // Fetch data from database secara paralel (menghindari waterfall)
+  // Fetch paralel
   const [popularRes, allRes, categoriesRes] = await Promise.all([
     getPopularDestinations(),
     getDestinations(),
@@ -22,7 +22,6 @@ export default async function HomePage() {
   const allListRaw: any[] = allDestinations || []
   const categoryListRaw: any[] = categories || []
 
-  // Logic for limiting items and showing "See all"
   const hasMorePopular = popularListRaw.length > 10
   const displayPopular = popularListRaw.slice(0, 10)
 
@@ -31,19 +30,18 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen px-6 pt-[30px] pb-8 max-w-7xl mx-auto space-y-12 pb-32">
-      {/* Search & Categories Section — termasuk header mobile di atasnya */}
+
       <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
 
-        {/* Header Beranda — hanya mobile S/M/L (< 768px) */}
         <div className="md:hidden w-full flex items-start justify-between mb-1">
-          {/* Kiri: label + judul */}
+
           <div>
             <p className="text-xs font-medium text-gray-400 mb-0.5">Beranda</p>
             <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-tight">
               Tianyar
             </h1>
           </div>
-          {/* Kanan: lokasi */}
+
           <div className="flex items-center gap-1 mt-2">
             <MapPin className="w-3 h-3 text-blue-500 shrink-0" />
             <span className="text-xs text-gray-500 whitespace-nowrap">
@@ -60,7 +58,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Popular Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Popular</h2>
@@ -71,7 +68,6 @@ export default async function HomePage() {
           )}
         </div>
 
-        {/* Horizontal scroll for popular items */}
         <div className="flex gap-5 overflow-x-auto pb-8 pt-4 px-2 -mx-2 no-scrollbar snap-x">
           {displayPopular.length > 0 ? (
             displayPopular.map((dest) => (
@@ -87,7 +83,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* All Destinations Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">All</h2>
@@ -98,7 +93,6 @@ export default async function HomePage() {
           )}
         </div>
 
-        {/* Grid layout for all items */}
         {displayAll.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2">
             {displayAll.map((dest) => (
@@ -112,7 +106,6 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* Map Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Map</h2>

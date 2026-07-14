@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  /* Font utama */
+
   --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
   --font-logo: var(--font-kaushan), cursive;
 
-  /* Custom breakpoints mobile (Chrome DevTools standar) */
   --breakpoint-mob-l: 26.5625rem;
-  /* 425px = Mobile L — patokan utama tampilan */
+
 }
 
 @layer base {
@@ -20,7 +19,7 @@
   }
 }
 
-/* Infinite marquee scroll untuk fasilitas */
+/* Marquee scroll */
 @keyframes marquee {
   0% {
     transform: translateX(0);
@@ -39,7 +38,7 @@
   animation-play-state: paused;
 }
 
-/* Hide scrollbar utility */
+/* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

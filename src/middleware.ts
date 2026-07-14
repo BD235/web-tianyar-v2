@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
     return await updateSession(request)
   } catch (error) {
     console.error('Proxy Error:', error)
-    // Jika ada error, tetap blokir /admin
+    // Blokir jika error
     const path = request.nextUrl.pathname
     if (path.startsWith('/admin')) {
       const url = request.nextUrl.clone()

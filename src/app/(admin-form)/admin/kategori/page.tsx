@@ -68,10 +68,8 @@ export default function FormKategoriPage() {
     <main className="min-h-screen pt-[70px] md:pt-[90px] pb-16 px-4 md:px-6 max-w-7xl mx-auto flex items-start justify-center w-full">
       <div className="w-full max-w-3xl space-y-4 relative">
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 md:border-gray-200 relative flex flex-col">
 
-          {/* Header — tidak sticky */}
           <div className="px-4 sm:px-6 py-4 md:py-6 border-b border-gray-100 flex items-center justify-between rounded-t-2xl md:rounded-t-3xl bg-white z-40 shadow-sm">
             <div className="flex items-center gap-3">
               <Link href="/admin">
@@ -84,7 +82,7 @@ export default function FormKategoriPage() {
                 <p className="text-xs text-gray-400">Buat kelompok wisata baru</p>
               </div>
             </div>
-            {/* Desktop Save */}
+
             <button
               onClick={handleSave}
               disabled={isPending || !name || !slug}
@@ -95,10 +93,8 @@ export default function FormKategoriPage() {
             </button>
           </div>
 
-          {/* Form Content */}
           <div className="p-4 sm:p-6 space-y-4 sm:space-y-5">
 
-            {/* Nama Kategori */}
             <div className="space-y-1.5">
               <label className="text-xs sm:text-sm font-semibold text-gray-700">Nama Kategori</label>
               <div className="relative">
@@ -113,7 +109,6 @@ export default function FormKategoriPage() {
               </div>
             </div>
 
-            {/* Slug */}
             <div className="space-y-1.5">
               <label className="text-xs sm:text-sm font-semibold text-gray-700">Slug URL</label>
               <p className="text-[10px] sm:text-xs text-gray-400">Huruf kecil dan tanda hubung, untuk filter URL.</p>
@@ -126,7 +121,6 @@ export default function FormKategoriPage() {
               />
             </div>
 
-            {/* Preview */}
             <div className="space-y-1.5">
               <label className="text-xs sm:text-sm font-semibold text-gray-700">Pratinjau</label>
               <div className="bg-gray-50 rounded-2xl p-4 flex items-center gap-3">
@@ -143,7 +137,6 @@ export default function FormKategoriPage() {
 
           </div>
 
-          {/* Mobile Save Button — inline di bawah form */}
           <div className="md:hidden px-4 pt-1 pb-4">
             <button
               onClick={handleSave}
@@ -157,7 +150,6 @@ export default function FormKategoriPage() {
 
         </div>
 
-        {/* Daftar Kategori */}
         <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 md:border-gray-200 p-4 sm:p-6">
           <h2 className="text-xs sm:text-sm font-semibold text-gray-700 mb-3">Kategori yang Sudah Ada</h2>
           <div className="space-y-1">

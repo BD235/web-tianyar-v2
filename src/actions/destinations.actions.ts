@@ -1,8 +1,8 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createPublicClient } from '@/lib/supabase/server'
 import { Destination, Category, Database } from '@/types'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { cache } from 'react'
 
 interface GetDestinationsParams {
@@ -12,10 +12,10 @@ interface GetDestinationsParams {
   limit?: number
 }
 
-// Cached internal implementation for fetching destinations (omitting facilities and tips_and_rules)
+// Cache internal destinasi
 const fetchDestinationsCached = cache(async (paramsKey: string) => {
   const params: GetDestinationsParams = JSON.parse(paramsKey)
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   const search = params?.search || ''
   const category = params?.category || ''
@@ -67,15 +67,25 @@ const fetchDestinationsCached = cache(async (paramsKey: string) => {
   return { data, count: count || 0 }
 })
 
-// Mengambil semua destinasi wisata
 export async function getDestinations(params?: GetDestinationsParams) {
-  const key = JSON.stringify(params || {})
-  return fetchDestinationsCached(key)
+  const search = params?.search || ''
+  const category = params?.category || ''
+  const page = String(params?.page || 1)
+  const limit = String(params?.limit || 12)
+
+  return unstable_cache(
+    async () => {
+      const key = JSON.stringify({ search, category, page: Number(page), limit: Number(limit) })
+      return fetchDestinationsCached(key)
+    },
+    ['destinations-list', search, category, page, limit],
+    { revalidate: 3600, tags: ['destinations'] }
+  )()
 }
 
-// Cached internal implementation for popular destinations
+// Cache internal popular
 const fetchPopularDestinationsCached = cache(async () => {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   const { data, error } = await supabase
     .from('destinations')
@@ -110,14 +120,17 @@ const fetchPopularDestinationsCached = cache(async () => {
   return { data }
 })
 
-// Mengambil destinasi unggulan (is_popular = true)
 export async function getPopularDestinations() {
-  return fetchPopularDestinationsCached()
+  return unstable_cache(
+    async () => fetchPopularDestinationsCached(),
+    ['popular-destinations-list'],
+    { revalidate: 3600, tags: ['popular-destinations', 'destinations'] }
+  )()
 }
 
-// Cached internal implementation for destination by ID (detail page, fetch everything including facilities and tips_and_rules)
+// Cache internal destinasi by ID
 const fetchDestinationByIdCached = cache(async (id: string) => {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   const { data, error } = await supabase
     .from('destinations')
@@ -140,14 +153,17 @@ const fetchDestinationByIdCached = cache(async (id: string) => {
   return { data }
 })
 
-// Mengambil satu destinasi berdasarkan ID
 export async function getDestinationById(id: string) {
-  return fetchDestinationByIdCached(id)
+  return unstable_cache(
+    async () => fetchDestinationByIdCached(id),
+    [`destination-detail-${id}`],
+    { revalidate: 3600, tags: [`destination-${id}`, 'destinations'] }
+  )()
 }
 
-// Cached internal implementation for categories
+// Cache internal kategori
 const fetchCategoriesCached = cache(async () => {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   const { data, error } = await supabase
     .from('categories')
@@ -162,12 +178,15 @@ const fetchCategoriesCached = cache(async () => {
   return { data }
 })
 
-// Mengambil semua kategori
 export async function getCategories() {
-  return fetchCategoriesCached()
+  return unstable_cache(
+    async () => fetchCategoriesCached(),
+    ['categories-list'],
+    { revalidate: 3600, tags: ['categories'] }
+  )()
 }
 
-// Helper kemanan: Verifikasi autentikasi admin sebelum mutasi data
+// Verifikasi autentikasi admin
 async function verifyAdminAuth() {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
@@ -177,7 +196,7 @@ async function verifyAdminAuth() {
   return { authorized: true, supabase }
 }
 
-// Helper sanitasi URL aman
+// Sanitasi URL
 function sanitizeMapUrl(url?: string | null): string | null {
   if (!url || !url.trim()) return null
   const trimmed = url.trim()
@@ -187,7 +206,7 @@ function sanitizeMapUrl(url?: string | null): string | null {
   return `https://${trimmed}`
 }
 
-// Mutations untuk Kategori (Dilindungi Autentikasi Admin)
+// Mutasi Kategori
 export async function createCategory(data: Database['public']['Tables']['categories']['Insert']) {
   const { authorized, supabase } = await verifyAdminAuth()
   if (!authorized) {
@@ -202,6 +221,7 @@ export async function createCategory(data: Database['public']['Tables']['categor
   revalidatePath('/admin')
   revalidatePath('/admin/kategori')
   revalidatePath('/admin/form')
+  revalidateTag('categories', 'max')
   return { success: true }
 }
 
@@ -219,10 +239,11 @@ export async function deleteCategory(id: string) {
   revalidatePath('/admin')
   revalidatePath('/admin/kategori')
   revalidatePath('/admin/form')
+  revalidateTag('categories', 'max')
   return { success: true }
 }
 
-// Mutations untuk Destinasi (Dilindungi Autentikasi Admin & Sanitasi URL)
+// Mutasi Destinasi
 export async function createDestination(data: Database['public']['Tables']['destinations']['Insert']) {
   const { authorized, supabase } = await verifyAdminAuth()
   if (!authorized) {
@@ -244,6 +265,8 @@ export async function createDestination(data: Database['public']['Tables']['dest
   revalidatePath('/destinasi')
   revalidatePath('/peta')
   revalidatePath('/admin')
+  revalidateTag('destinations', 'max')
+  revalidateTag('popular-destinations', 'max')
   return { success: true }
 }
 
@@ -271,6 +294,9 @@ export async function updateDestination(id: string, data: Database['public']['Ta
   revalidatePath('/peta')
   revalidatePath('/admin')
   revalidatePath(`/wisata/${id}`)
+  revalidateTag('destinations', 'max')
+  revalidateTag('popular-destinations', 'max')
+  revalidateTag(`destination-${id}`, 'max')
   return { success: true }
 }
 
@@ -290,6 +316,8 @@ export async function deleteDestination(id: string) {
   revalidatePath('/destinasi')
   revalidatePath('/peta')
   revalidatePath('/admin')
+  revalidateTag('destinations', 'max')
+  revalidateTag('popular-destinations', 'max')
+  revalidateTag(`destination-${id}`, 'max')
   return { success: true }
 }
-

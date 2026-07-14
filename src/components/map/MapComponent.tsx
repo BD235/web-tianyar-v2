@@ -7,7 +7,7 @@ import L from 'leaflet'
 import { Destination } from '@/types'
 import { Navigation, Info } from 'lucide-react'
 
-// Fix for default marker icon in Leaflet + Next.js
+// Leaflet marker icon fix
 const customIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -18,10 +18,10 @@ const customIcon = new L.Icon({
   shadowSize: [41, 41]
 })
 
-// Bali approximate bounds
+// Batas wilayah Bali
 const BALI_BOUNDS: L.LatLngBoundsExpression = [
-  [-8.850, 114.400], // South West
-  [-8.050, 115.750]  // North East
+  [-8.850, 114.400],
+  [-8.050, 115.750]
 ]
 
 interface MapComponentProps {
@@ -30,7 +30,7 @@ interface MapComponentProps {
   frameless?: boolean
 }
 
-// Controller agar peta langsung terbang/direct (flyTo) ke lokasi sesuai hasil pencarian
+// Kontroler flyTo peta
 function MapController({ destinations }: { destinations: Destination[] }) {
   const map = useMap()
 
@@ -54,7 +54,7 @@ function MapController({ destinations }: { destinations: Destination[] }) {
 
       const targetZoom = 16
       const point = map.project([lat, lng], targetZoom)
-      // Geser proporsional ke atas supaya marker & popup card muncul lebih ke bawah secara aman di layar mobile maupun desktop
+      // Geser offset marker
       const offsetY = Math.min(160, Math.floor(size.y * 0.22))
       const offsetPoint = L.point(point.x, point.y - offsetY)
       const targetLatLng = map.unproject(offsetPoint, targetZoom)
@@ -82,14 +82,14 @@ function MapController({ destinations }: { destinations: Destination[] }) {
   return null
 }
 
-export default function MapComponent({ 
-  destinations, 
+export default function MapComponent({
+  destinations,
   className = "w-full h-[calc(100vh-160px)] min-h-[600px]",
   frameless = false
 }: MapComponentProps) {
   const [mounted, setMounted] = useState(false)
 
-  // Avoid SSR issues with window/leaflet
+  // Cegah masalah SSR Leaflet
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -100,7 +100,7 @@ export default function MapComponent({
     </div>
   }
 
-  // Posisi awal peta agak kekiri atas sedikit
+  // Posisi awal peta
   const defaultCenter: L.LatLngExpression = [-8.218, 115.495]
 
   return (
@@ -218,4 +218,3 @@ export default function MapComponent({
     </div>
   )
 }
-

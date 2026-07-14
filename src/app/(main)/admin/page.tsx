@@ -14,7 +14,7 @@ export default async function AdminDashboard() {
   }
 
   const [destinationsRes, categoriesRes] = await Promise.all([
-    getDestinations({ limit: 1000 }), // fetch all for admin
+    getDestinations({ limit: 1000 }),
     getCategories()
   ])
 
@@ -22,9 +22,9 @@ export default async function AdminDashboard() {
   const categories = categoriesRes.data || []
 
   return (
-    <AdminDashboardClient 
-      destinations={destinations} 
-      categories={categories} 
+    <AdminDashboardClient
+      destinations={destinations}
+      categories={categories}
     />
   )
 }

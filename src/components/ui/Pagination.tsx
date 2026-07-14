@@ -20,7 +20,7 @@ export default function Pagination({ totalPages }: PaginationProps) {
     router.push(`/destinasi?${params.toString()}`)
   }
 
-  // Create array of pages
+  // Generate deret halaman
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
 
   return (

@@ -27,7 +27,7 @@ export default function SearchBar({ placeholder = "Find things to do", className
     } else {
       params.delete('q')
     }
-    params.delete('page') // Reset pagination on new search
+    params.delete('page') // Reset paginasi
 
     let targetPath = pathname
     if (pathname === '/home' || pathname === '/') {
@@ -74,4 +74,3 @@ export default function SearchBar({ placeholder = "Find things to do", className
     </form>
   )
 }
-

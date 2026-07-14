@@ -31,15 +31,14 @@ export default async function DestinasiPage({
 
   const destinationListRaw: any[] = destinations || []
   const categoryListRaw: any[] = categories || []
-  
+
   const totalPages = Math.ceil((count || 0) / limit)
 
   return (
     <main className="min-h-screen px-6 pt-[30px] pb-8 max-w-7xl mx-auto space-y-12 pb-32">
-      {/* Search & Categories Section — termasuk header mobile di atasnya */}
+
       <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
 
-        {/* Header Destinasi — hanya mobile S/M/L (< 768px) */}
         <div className="md:hidden w-full flex items-start justify-between mb-1">
           <div>
             <p className="text-xs font-medium text-gray-400 mb-0.5">Destinasi</p>
@@ -63,7 +62,6 @@ export default async function DestinasiPage({
         </div>
       </section>
 
-      {/* Destinations List */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
@@ -73,7 +71,7 @@ export default async function DestinasiPage({
             {count || 0} ditemukan
           </span>
         </div>
-        
+
         {destinationListRaw.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2">
             {destinationListRaw.map((dest) => (
@@ -87,7 +85,6 @@ export default async function DestinasiPage({
           </div>
         )}
 
-        {/* Pagination */}
         <Pagination totalPages={totalPages} />
       </section>
     </main>

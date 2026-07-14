@@ -17,7 +17,6 @@ export default function DescriptionToggle({ text }: DescriptionToggleProps) {
 
   return (
     <div className="w-full">
-      {/* line-clamp-4: potong tepat di baris ke-4, tidak tumpang tindih dengan tombol */}
       <p className={`text-gray-600 text-sm leading-relaxed text-justify ${shouldTruncate && !isExpanded ? 'line-clamp-4' : ''}`}>
         {text}
       </p>

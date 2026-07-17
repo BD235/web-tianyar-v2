@@ -52,7 +52,7 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
   }
 
   return (
-    <main className="min-h-screen px-6 pt-[30px] pb-8 max-w-7xl mx-auto pb-32 space-y-8">
+    <main className="min-h-screen px-5 sm:px-6 pt-[30px] pb-32 max-w-7xl mx-auto space-y-8">
 
       <div className="w-full">
         <div className="flex items-start justify-between">

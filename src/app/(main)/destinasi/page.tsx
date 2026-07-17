@@ -35,7 +35,7 @@ export default async function DestinasiPage({
   const totalPages = Math.ceil((count || 0) / limit)
 
   return (
-    <main className="min-h-screen px-6 pt-[30px] pb-8 max-w-7xl mx-auto space-y-12 pb-32">
+    <main className="min-h-screen px-5 sm:px-6 pt-[30px] pb-32 max-w-7xl mx-auto space-y-12">
 
       <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
 
@@ -73,15 +73,19 @@ export default async function DestinasiPage({
         </div>
 
         {destinationListRaw.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2">
-            {destinationListRaw.map((dest) => (
-              <DestinationCard key={dest.id} destination={dest} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+            {destinationListRaw.map((dest, i) => (
+              <DestinationCard
+                key={dest.id}
+                destination={dest}
+                priority={i < 4}
+              />
             ))}
           </div>
         ) : (
           <div className="w-full py-20 flex flex-col justify-center items-center bg-gray-50 rounded-3xl border border-dashed border-gray-200 gap-2">
-            <p className="text-gray-500 font-medium">Tidak ada destinasi yang sesuai dengan filter Anda.</p>
-            <p className="text-gray-400 text-sm">Coba gunakan kata kunci pencarian atau kategori lain.</p>
+            <p className="text-gray-500 font-medium text-sm">Tidak ada destinasi yang sesuai dengan filter Anda.</p>
+            <p className="text-gray-400 text-xs">Coba gunakan kata kunci pencarian atau kategori lain.</p>
           </div>
         )}
 

@@ -47,8 +47,19 @@ const fetchDestinationsCached = cache(async (paramsKey: string) => {
       )
     `, { count: 'exact' })
 
+  // Gunakan Full-Text Search (textSearch) via kolom search_vector + index GIN
+  // Jauh lebih cepat dari ilike '%keyword%' yang melakukan full-table scan
   if (search) {
-    query = query.ilike('title', `%${search}%`)
+    if (search.trim().length >= 2) {
+      // Gunakan websearch mode: mendukung frasa dan kata parsial
+      query = query.textSearch('search_vector', search.trim(), {
+        type: 'websearch',
+        config: 'simple',
+      })
+    } else {
+      // Fallback ke ilike untuk input karakter tunggal
+      query = query.ilike('title', `%${search}%`)
+    }
   }
 
   if (category) {

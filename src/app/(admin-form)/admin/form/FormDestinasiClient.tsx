@@ -60,26 +60,43 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
     ? { lat: parseFloat(latInput), lng: parseFloat(lngInput) }
     : null;
 
-  const fileToDataUrl = (file: File): Promise<string> => {
+  // Kompresi gambar ke Blob (lebih efisien dari base64 dataURL)
+  const compressImageToBlob = (file: File, maxWidth = 1200, quality = 0.8): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const img = new Image()
+      const objectUrl = URL.createObjectURL(file)
+
       img.onload = () => {
+        URL.revokeObjectURL(objectUrl) // Bebaskan memory segera setelah gambar dimuat
+
+        const scale = Math.min(1, maxWidth / img.width)
         const canvas = document.createElement('canvas')
-        const MAX_WIDTH = 1200
-        let width = img.width
-        let height = img.height
-        if (width > MAX_WIDTH) {
-          height = Math.round((height * MAX_WIDTH) / width)
-          width = MAX_WIDTH
-        }
-        canvas.width = width
-        canvas.height = height
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+
         const ctx = canvas.getContext('2d')
-        ctx?.drawImage(img, 0, 0, width, height)
-        resolve(canvas.toDataURL('image/jpeg', 0.8))
+        if (!ctx) {
+          reject(new Error('Canvas context tidak tersedia'))
+          return
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob)
+            else reject(new Error('Gagal mengompresi gambar'))
+          },
+          'image/jpeg',
+          quality
+        )
       }
-      img.onerror = reject
-      img.src = URL.createObjectURL(file)
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl)
+        reject(new Error('Gagal memuat gambar'))
+      }
+
+      img.src = objectUrl
     })
   }
 
@@ -105,11 +122,24 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
             setIsUploadingImages(false)
             return
           }
-          const fileExt = file.name.split('.').pop()
-          const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`
+
+          // Kompresi gambar ke Blob sebelum upload (lebih kecil dari base64)
+          let fileToUpload: Blob | File = file
+          try {
+            fileToUpload = await compressImageToBlob(file)
+          } catch (compressErr) {
+            console.warn('Kompresi gagal, menggunakan file original:', compressErr)
+          }
+
+          // Gunakan crypto.randomUUID untuk nama file yang aman dan unik
+          const fileName = `${crypto.randomUUID()}.jpg`
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('wisata-images')
-            .upload(fileName, file)
+            .upload(fileName, fileToUpload, {
+              contentType: 'image/jpeg',
+              cacheControl: '3600',
+              upsert: false,
+            })
 
           if (uploadError) {
             console.error('Supabase Storage error:', uploadError.message)

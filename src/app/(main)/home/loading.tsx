@@ -1,6 +1,6 @@
 export default function HomeLoading() {
   return (
-    <main className="min-h-screen px-6 py-8 max-w-7xl mx-auto space-y-12 pb-32 animate-pulse">
+    <main className="min-h-screen px-5 sm:px-6 pt-[30px] pb-32 max-w-7xl mx-auto space-y-10 animate-pulse">
 
       <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
         <div className="w-full lg:w-[400px] h-12 bg-gray-200 rounded-full shrink-0" />

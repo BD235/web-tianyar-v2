@@ -1,7 +1,6 @@
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import DesktopNavbar from "@/components/layout/DesktopNavbar";
 import Footer from "@/components/layout/Footer";
-import Link from 'next/link';
 import TopLogo from '@/components/layout/TopLogo';
 
 export default function MainLayout({

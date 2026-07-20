@@ -1,9 +1,8 @@
 'use server'
 
 import { createClient, createPublicClient } from '@/lib/supabase/server'
-import { Destination, Category, Database } from '@/types'
+import { Database } from '@/types'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
-import { cache } from 'react'
 
 interface GetDestinationsParams {
   search?: string
@@ -12,192 +11,197 @@ interface GetDestinationsParams {
   limit?: number
 }
 
-// Cache internal destinasi
-const fetchDestinationsCached = cache(async (paramsKey: string) => {
-  const params: GetDestinationsParams = JSON.parse(paramsKey)
-  const supabase = createPublicClient()
-
+// ─────────────────────────────────────────────
+// READ: Daftar Destinasi (dengan search, category, pagination)
+// Menggunakan unstable_cache langsung — tidak perlu double-layer react.cache
+// ─────────────────────────────────────────────
+export async function getDestinations(params?: GetDestinationsParams) {
   const search = params?.search || ''
   const category = params?.category || ''
   const page = params?.page || 1
   const limit = params?.limit || 12
 
-  const from = (page - 1) * limit
-  const to = from + limit - 1
-
-  let query = supabase
-    .from('destinations')
-    .select(`
-      id,
-      category_id,
-      title,
-      description,
-      price,
-      operational_hours,
-      latitude,
-      longitude,
-      images,
-      is_popular,
-      created_at,
-      map_url,
-      categories!inner (
-        id,
-        name,
-        slug
-      )
-    `, { count: 'exact' })
-
-  // Gunakan Full-Text Search (textSearch) via kolom search_vector + index GIN
-  // Jauh lebih cepat dari ilike '%keyword%' yang melakukan full-table scan
-  if (search) {
-    if (search.trim().length >= 2) {
-      // Gunakan websearch mode: mendukung frasa dan kata parsial
-      query = query.textSearch('search_vector', search.trim(), {
-        type: 'websearch',
-        config: 'simple',
-      })
-    } else {
-      // Fallback ke ilike untuk input karakter tunggal
-      query = query.ilike('title', `%${search}%`)
-    }
-  }
-
-  if (category) {
-    query = query.eq('categories.slug', category)
-  }
-
-  const { data, count, error } = await query
-    .order('created_at', { ascending: false })
-    .range(from, to)
-
-  if (error) {
-    console.error('Error fetching destinations:', error)
-    return { error: 'Gagal mengambil data wisata.', count: 0 }
-  }
-
-  return { data, count: count || 0 }
-})
-
-export async function getDestinations(params?: GetDestinationsParams) {
-  const search = params?.search || ''
-  const category = params?.category || ''
-  const page = String(params?.page || 1)
-  const limit = String(params?.limit || 12)
-
   return unstable_cache(
     async () => {
-      const key = JSON.stringify({ search, category, page: Number(page), limit: Number(limit) })
-      return fetchDestinationsCached(key)
+      const supabase = createPublicClient()
+
+      const from = (page - 1) * limit
+      const to = from + limit - 1
+
+      let query = supabase
+        .from('destinations')
+        .select(`
+          id,
+          category_id,
+          title,
+          description,
+          price,
+          operational_hours,
+          latitude,
+          longitude,
+          images,
+          is_popular,
+          created_at,
+          map_url,
+          categories!inner (
+            id,
+            name,
+            slug
+          )
+        `, { count: 'exact' })
+
+      // Gunakan Full-Text Search via kolom search_vector + index GIN
+      // Jauh lebih cepat dari ilike '%keyword%' yang melakukan full-table scan
+      if (search) {
+        if (search.trim().length >= 2) {
+          query = query.textSearch('search_vector', search.trim(), {
+            type: 'websearch',
+            config: 'simple',
+          })
+        } else {
+          // Fallback ke ilike untuk input karakter tunggal
+          query = query.ilike('title', `%${search}%`)
+        }
+      }
+
+      if (category) {
+        query = query.eq('categories.slug', category)
+      }
+
+      const { data, count, error } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to)
+
+      if (error) {
+        console.error('Error fetching destinations:', error)
+        return { error: 'Gagal mengambil data wisata.', count: 0 }
+      }
+
+      return { data, count: count || 0 }
     },
-    ['destinations-list', search, category, page, limit],
-    { revalidate: 3600, tags: ['destinations'] }
+    ['destinations-list', search, category, String(page), String(limit)],
+    { revalidate: 60, tags: ['destinations'] }
   )()
 }
 
-// Cache internal popular
-const fetchPopularDestinationsCached = cache(async () => {
-  const supabase = createPublicClient()
+// ─────────────────────────────────────────────
+// READ: Destinasi Populer
+// ─────────────────────────────────────────────
+export const getPopularDestinations = unstable_cache(
+  async () => {
+    const supabase = createPublicClient()
 
-  const { data, error } = await supabase
-    .from('destinations')
-    .select(`
-      id,
-      category_id,
-      title,
-      description,
-      price,
-      operational_hours,
-      latitude,
-      longitude,
-      images,
-      is_popular,
-      created_at,
-      map_url,
-      categories (
+    const { data, error } = await supabase
+      .from('destinations')
+      .select(`
         id,
-        name,
-        slug
-      )
-    `)
-    .eq('is_popular', true)
-    .order('created_at', { ascending: false })
-    .limit(15)
+        category_id,
+        title,
+        description,
+        price,
+        operational_hours,
+        latitude,
+        longitude,
+        images,
+        is_popular,
+        created_at,
+        map_url,
+        categories (
+          id,
+          name,
+          slug
+        )
+      `)
+      .eq('is_popular', true)
+      .order('created_at', { ascending: false })
+      .limit(15)
 
-  if (error) {
-    console.error('Error fetching popular destinations:', error)
-    return { error: 'Gagal mengambil data wisata populer.' }
-  }
+    if (error) {
+      console.error('Error fetching popular destinations:', error)
+      return { error: 'Gagal mengambil data wisata populer.' }
+    }
 
-  return { data }
-})
+    return { data }
+  },
+  ['popular-destinations'],
+  { revalidate: 30, tags: ['popular-destinations', 'destinations'] }
+)
 
-export async function getPopularDestinations() {
-  return unstable_cache(
-    async () => fetchPopularDestinationsCached(),
-    ['popular-destinations-list'],
-    { revalidate: 3600, tags: ['popular-destinations', 'destinations'] }
-  )()
-}
-
-// Cache internal destinasi by ID
-const fetchDestinationByIdCached = cache(async (id: string) => {
-  const supabase = createPublicClient()
-
-  const { data, error } = await supabase
-    .from('destinations')
-    .select(`
-      *,
-      categories (
-        id,
-        name,
-        slug
-      )
-    `)
-    .eq('id', id)
-    .single()
-
-  if (error) {
-    console.error(`Error fetching destination ${id}:`, error)
-    return { error: 'Data wisata tidak ditemukan.' }
-  }
-
-  return { data }
-})
-
+// ─────────────────────────────────────────────
+// READ: Destinasi by ID — explicit column list, bukan select('*')
+// ─────────────────────────────────────────────
 export async function getDestinationById(id: string) {
   return unstable_cache(
-    async () => fetchDestinationByIdCached(id),
+    async () => {
+      const supabase = createPublicClient()
+
+      // Explicit column list — hindari select('*') yang mengambil semua kolom
+      // termasuk search_vector (tsvector bisa besar) dan kolom yang tidak digunakan
+      const { data, error } = await supabase
+        .from('destinations')
+        .select(`
+          id,
+          category_id,
+          title,
+          description,
+          price,
+          operational_hours,
+          latitude,
+          longitude,
+          images,
+          is_popular,
+          map_url,
+          tips_and_rules,
+          facilities,
+          created_at,
+          updated_at,
+          categories (
+            id,
+            name,
+            slug
+          )
+        `)
+        .eq('id', id)
+        .single()
+
+      if (error) {
+        console.error(`Error fetching destination ${id}:`, error)
+        return { error: 'Data wisata tidak ditemukan.' }
+      }
+
+      return { data }
+    },
     [`destination-detail-${id}`],
-    { revalidate: 3600, tags: [`destination-${id}`, 'destinations'] }
+    { revalidate: 60, tags: [`destination-${id}`, 'destinations'] }
   )()
 }
 
-// Cache internal kategori
-const fetchCategoriesCached = cache(async () => {
-  const supabase = createPublicClient()
+// ─────────────────────────────────────────────
+// READ: Kategori — static data, di-hoist ke module level
+// ─────────────────────────────────────────────
+export const getCategories = unstable_cache(
+  async () => {
+    const supabase = createPublicClient()
 
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .order('name', { ascending: true })
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name', { ascending: true })
 
-  if (error) {
-    console.error('Error fetching categories:', error)
-    return { error: 'Gagal mengambil data kategori.' }
-  }
+    if (error) {
+      console.error('Error fetching categories:', error)
+      return { error: 'Gagal mengambil data kategori.' }
+    }
 
-  return { data }
-})
+    return { data }
+  },
+  ['categories-list'],
+  { revalidate: 3600, tags: ['categories'] }
+)
 
-export async function getCategories() {
-  return unstable_cache(
-    async () => fetchCategoriesCached(),
-    ['categories-list'],
-    { revalidate: 3600, tags: ['categories'] }
-  )()
-}
-
-// Verifikasi autentikasi admin
+// ─────────────────────────────────────────────
+// HELPER: Verifikasi autentikasi admin
+// ─────────────────────────────────────────────
 async function verifyAdminAuth() {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
@@ -207,7 +211,7 @@ async function verifyAdminAuth() {
   return { authorized: true, supabase }
 }
 
-// Sanitasi URL
+// HELPER: Sanitasi URL Google Maps
 function sanitizeMapUrl(url?: string | null): string | null {
   if (!url || !url.trim()) return null
   const trimmed = url.trim()
@@ -217,13 +221,16 @@ function sanitizeMapUrl(url?: string | null): string | null {
   return `https://${trimmed}`
 }
 
-// Mutasi Kategori
+// ─────────────────────────────────────────────
+// MUTASI: Kategori
+// ─────────────────────────────────────────────
 export async function createCategory(data: Database['public']['Tables']['categories']['Insert']) {
   const { authorized, supabase } = await verifyAdminAuth()
   if (!authorized) {
     return { error: 'Akses ditolak: Harap login sebagai admin.' }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await supabase.from('categories').insert([data] as any)
   if (error) {
     console.error('Error creating category:', error)
@@ -254,7 +261,9 @@ export async function deleteCategory(id: string) {
   return { success: true }
 }
 
-// Mutasi Destinasi
+// ─────────────────────────────────────────────
+// MUTASI: Destinasi
+// ─────────────────────────────────────────────
 export async function createDestination(data: Database['public']['Tables']['destinations']['Insert']) {
   const { authorized, supabase } = await verifyAdminAuth()
   if (!authorized) {
@@ -266,6 +275,7 @@ export async function createDestination(data: Database['public']['Tables']['dest
     map_url: sanitizeMapUrl(data.map_url)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await supabase.from('destinations').insert([sanitizedData] as any)
   if (error) {
     console.error('Error creating destination:', error)
@@ -293,8 +303,13 @@ export async function updateDestination(id: string, data: Database['public']['Ta
     updated_at: new Date().toISOString()
   }
 
-  // @ts-ignore
-  const { error } = await supabase.from('destinations').update(sanitizedData as any).eq('id', id)
+  // Supabase strict generic memerlukan cast — known limitation di strict TypeScript
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('destinations')
+    .update(sanitizedData)
+    .eq('id', id)
+
   if (error) {
     console.error('Error updating destination:', error)
     return { error: error.message || 'Gagal mengubah destinasi.' }

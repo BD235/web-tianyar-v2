@@ -15,9 +15,11 @@ export default function DesktopNavbar() {
 
     useEffect(() => {
         const supabase = createClient();
-        
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            setIsAdminAuth(!!user);
+
+        // getSession() membaca dari localStorage — tidak ada network request
+        // Jauh lebih cepat dari getUser() yang melakukan roundtrip ke Supabase Auth
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setIsAdminAuth(!!session?.user);
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {

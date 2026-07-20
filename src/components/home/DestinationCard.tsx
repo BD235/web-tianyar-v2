@@ -49,6 +49,7 @@ export default function DestinationCard({
             src={destination.images![0]}
             alt={destination.title}
             fill
+            unoptimized
             sizes="(max-width: 375px) 45vw, (max-width: 425px) 45vw, (max-width: 640px) 45vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 260px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority={priority}
@@ -62,14 +63,26 @@ export default function DestinationCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
       </div>
 
-      {/* Nama + tombol hati — pojok kiri & kanan bawah */}
+      {/* Nama + deskripsi + tombol hati — pojok kiri & kanan bawah */}
       <div className="absolute bottom-3 left-3 right-3 z-20 flex items-end justify-between gap-2">
-        {/* Badge nama — glassmorphism blur */}
-        <span className="inline-block bg-white/20 backdrop-blur-md rounded-xl px-3 py-1.5 shadow-sm max-w-[calc(100%-2.5rem)]">
-          <h3 className="text-white font-semibold text-sm leading-tight line-clamp-1 drop-shadow-sm">
-            {destination.title}
-          </h3>
-        </span>
+        {/* Kolom kiri: judul di atas, deskripsi di bawah — masing-masing punya badge sendiri */}
+        <div className="flex flex-col gap-2 min-w-0 max-w-[calc(100%-2.5rem)]">
+          {/* Badge judul */}
+          <span className="inline-block self-start bg-white/20 backdrop-blur-md rounded-xl px-3 py-1.5 shadow-sm">
+            <h3 className="text-white font-semibold text-sm leading-tight line-clamp-1 drop-shadow-sm">
+              {destination.title}
+            </h3>
+          </span>
+
+          {/* Badge deskripsi — hanya pada card biasa (bukan popular) */}
+          {!isPopular && destination.description && (
+            <span className="inline-block self-start bg-black/30 backdrop-blur-sm rounded-lg px-2.5 py-1 shadow-sm">
+              <p className="text-white/85 text-[10px] leading-tight line-clamp-2 drop-shadow-sm">
+                {destination.description}
+              </p>
+            </span>
+          )}
+        </div>
 
         {/* Tombol favorit — hanya muncul jika admin menandai sebagai populer */}
         {destination.is_popular && (

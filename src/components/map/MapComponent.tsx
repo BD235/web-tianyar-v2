@@ -91,6 +91,7 @@ export default function MapComponent({
 
   // Cegah masalah SSR Leaflet
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
   }, [])
 
@@ -145,8 +146,10 @@ export default function MapComponent({
                     className="w-full h-[125px] bg-cover bg-center rounded-xl shadow-inner relative overflow-hidden"
                     style={{ backgroundImage: `url('${dest.images && dest.images.length > 0 ? dest.images[0] : 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=800'}')` }}
                   >
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {(dest as any).categories?.name && (
                       <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {(dest as any).categories?.name}
                       </span>
                     )}

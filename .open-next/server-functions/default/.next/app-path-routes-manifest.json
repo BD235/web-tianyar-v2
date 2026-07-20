@@ -1,0 +1,14 @@
+{
+  "/(admin-form)/admin/form/page": "/admin/form",
+  "/(admin-form)/admin/kategori/page": "/admin/kategori",
+  "/(auth)/login/page": "/login",
+  "/(main)/admin/page": "/admin",
+  "/(main)/destinasi/page": "/destinasi",
+  "/(main)/home/page": "/home",
+  "/(main)/peta/page": "/peta",
+  "/(main)/wisata/[id]/page": "/wisata/[id]",
+  "/(welcome)/page": "/",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/auth/callback/route": "/auth/callback"
+}

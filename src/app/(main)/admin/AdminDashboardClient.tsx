@@ -15,11 +15,12 @@ import {
   Search,
   Layers,
 } from 'lucide-react'
-import { Destination, Category } from '@/types'
+import { Category } from '@/types'
 import { deleteDestination } from '@/actions/destinations.actions'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 
 interface AdminDashboardClientProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   destinations: any[]
   categories: Category[]
 }
@@ -124,40 +125,42 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
               />
             </div>
 
-            <div className="relative shrink-0">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-xl font-semibold text-xs sm:text-sm transition shadow-sm"
-                title="Tambah"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Tambah</span>
-              </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-xl font-semibold text-xs sm:text-sm transition shadow-sm"
+                  title="Tambah"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Tambah</span>
+                </button>
 
-              {dropdownOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-[180px]">
-                    <Link
-                      href="/admin/form"
-                      className="flex items-center gap-3 px-4 py-3.5 hover:bg-blue-50/50 transition group"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      <MapPin className="w-4 h-4 text-blue-600 stroke-[1.25] group-hover:scale-110 transition-transform shrink-0" />
-                      <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Destinasi</span>
-                    </Link>
-                    <div className="h-px bg-gray-100 mx-3" />
-                    <Link
-                      href="/admin/kategori"
-                      className="flex items-center gap-3 px-4 py-3.5 hover:bg-amber-50/50 transition group"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      <Tag className="w-4 h-4 text-amber-600 stroke-[1.25] group-hover:scale-110 transition-transform shrink-0" />
-                      <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Kategori</span>
-                    </Link>
-                  </div>
-                </>
-              )}
+                {dropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 min-w-[200px]">
+                      <Link
+                        href="/admin/form"
+                        className="flex items-center gap-3 px-4 py-3.5 hover:bg-blue-50/50 transition group"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <MapPin className="w-4 h-4 text-blue-600 stroke-[1.25] group-hover:scale-110 transition-transform shrink-0" />
+                        <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Destinasi</span>
+                      </Link>
+                      <div className="h-px bg-gray-100 mx-3" />
+                      <Link
+                        href="/admin/kategori"
+                        className="flex items-center gap-3 px-4 py-3.5 hover:bg-amber-50/50 transition group"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <Tag className="w-4 h-4 text-amber-600 stroke-[1.25] group-hover:scale-110 transition-transform shrink-0" />
+                        <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">Tambah Kategori</span>
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -217,7 +220,7 @@ export default function AdminDashboardClient({ destinations, categories }: Admin
                   <td className="px-3 sm:px-6 py-3 sm:py-4 hidden lg:table-cell">
                     <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400">
                       <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                      {new Date(dest.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      {new Date(dest.created_at || new Date().toISOString()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
                   </td>
                   <td className="px-3 sm:px-6 py-3 sm:py-4">

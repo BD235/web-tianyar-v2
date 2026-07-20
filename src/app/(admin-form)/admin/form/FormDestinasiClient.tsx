@@ -4,10 +4,10 @@ import { useState, useTransition, useEffect } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Image as ImageIcon, MapPin, Loader2, Plus, Trash2, Car, Bath, Utensils, Landmark, Umbrella, Camera, Info, ShoppingBag } from 'lucide-react'
+import { ArrowLeft, Save, Image as ImageIcon, MapPin, Loader2, Trash2, Car, Bath, Utensils, Landmark, Umbrella, Camera, Info, ShoppingBag } from 'lucide-react'
 import { Category } from '@/types'
 import { createDestination, updateDestination } from '@/actions/destinations.actions'
-import { createClient } from '@/lib/supabase/client'
+import { uploadImage } from '@/actions/upload.actions'
 
 const LocationPickerMap = dynamic(() => import('@/components/map/LocationPickerMap'), { ssr: false })
 
@@ -24,6 +24,7 @@ const FACILITIES_LIST = [
 
 interface FormDestinasiClientProps {
   categories: Category[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any
 }
 
@@ -46,7 +47,17 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
 
   const [existingImages, setExistingImages] = useState<string[]>(initialData?.images || [])
   const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]) // ← Object URLs dikelola dalam state
   const [isUploadingImages, setIsUploadingImages] = useState(false)
+
+  // Buat Object URL untuk preview saat imageFiles berubah,
+  // dan revoke URL lama untuk mencegah memory leak
+  useEffect(() => {
+    const urls = imageFiles.map(f => URL.createObjectURL(f))
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPreviewUrls(urls)
+    return () => urls.forEach(url => URL.revokeObjectURL(url)) // cleanup!
+  }, [imageFiles])
 
   const [latInput, setLatInput] = useState(initialData?.latitude?.toString() || '')
   const [lngInput, setLngInput] = useState(initialData?.longitude?.toString() || '')
@@ -107,50 +118,52 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
     }
 
     startTransition(async () => {
-      const supabase = createClient()
-      let uploadedUrls: string[] = []
+      const uploadedUrls: string[] = []
 
-      // Unggah gambar baru
+      // Unggah gambar baru via Server Action (bypass RLS dengan session server)
       if (imageFiles.length > 0) {
         setIsUploadingImages(true)
-        const MAX_SIZE = 5 * 1024 * 1024 // Batas 5MB
+
+        const MAX_SIZE = 5 * 1024 * 1024
         const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
 
+        // Validasi semua file terlebih dahulu
         for (const file of imageFiles) {
           if (!ALLOWED_TYPES.includes(file.type) || file.size > MAX_SIZE) {
             alert(`File "${file.name}" tidak valid atau ukurannya melebihi 5MB. Proses simpan dibatalkan.`)
             setIsUploadingImages(false)
             return
           }
+        }
 
-          // Kompresi gambar ke Blob sebelum upload (lebih kecil dari base64)
-          let fileToUpload: Blob | File = file
-          try {
-            fileToUpload = await compressImageToBlob(file)
-          } catch (compressErr) {
-            console.warn('Kompresi gagal, menggunakan file original:', compressErr)
-          }
+        // Kompresi gambar
+        const compressResults = await Promise.all(
+          imageFiles.map(async (file) => {
+            try {
+              return { blob: await compressImageToBlob(file), name: file.name }
+            } catch {
+              console.warn(`Kompresi gagal untuk ${file.name}, pakai file original`)
+              return { blob: file as Blob, name: file.name }
+            }
+          })
+        )
 
-          // Gunakan crypto.randomUUID untuk nama file yang aman dan unik
-          const fileName = `${crypto.randomUUID()}.jpg`
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('wisata-images')
-            .upload(fileName, fileToUpload, {
-              contentType: 'image/jpeg',
-              cacheControl: '3600',
-              upsert: false,
-            })
+        // Upload satu per satu via Server Action (membawa session cookie)
+        for (let i = 0; i < compressResults.length; i++) {
+          const { blob, name } = compressResults[i]
+          const formData = new FormData()
+          formData.append('file', new File([blob], name, { type: 'image/jpeg' }))
 
+          const { url, error: uploadError } = await uploadImage(formData)
           if (uploadError) {
-            console.error('Supabase Storage error:', uploadError.message)
-            alert(`Gagal mengunggah gambar "${file.name}": ${uploadError.message}. Pastikan bucket "wisata-images" sudah dibuat dan memiliki izin akses yang benar di Supabase.`)
+            console.error('Upload error:', uploadError)
+            alert(`Gagal mengunggah gambar "${name}": ${uploadError}`)
             setIsUploadingImages(false)
             return
-          } else if (uploadData) {
-            const { data: publicUrlData } = supabase.storage.from('wisata-images').getPublicUrl(uploadData.path)
-            uploadedUrls.push(publicUrlData.publicUrl)
           }
+          if (url) uploadedUrls.push(url)
         }
+
         setIsUploadingImages(false)
       }
 
@@ -206,11 +219,11 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
 
             <button
               onClick={handleSave}
-              disabled={isPending}
+              disabled={isPending || isUploadingImages}
               className="hidden md:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white px-6 py-2.5 rounded-full font-medium transition-colors shadow-sm"
             >
-              {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {isPending ? 'Menyimpan...' : 'Simpan'}
+              {isPending || isUploadingImages ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {isUploadingImages ? 'Mengunggah...' : isPending ? 'Menyimpan...' : 'Simpan'}
             </button>
           </div>
 
@@ -447,6 +460,7 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {existingImages.map((url, i) => (
                       <div key={`existing-${i}`} className="relative group rounded-2xl overflow-hidden aspect-video border border-gray-200 bg-gray-100 shadow-sm">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
                         <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md">
                           Tersimpan {i + 1}
@@ -463,7 +477,8 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
                     ))}
                     {imageFiles.map((file, i) => (
                       <div key={`new-${i}`} className="relative group rounded-2xl overflow-hidden aspect-video border border-blue-300 bg-blue-50 shadow-sm">
-                        <img src={URL.createObjectURL(file)} alt={`Foto Baru ${i + 1}`} className="w-full h-full object-cover" />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={previewUrls[i]} alt={`Foto Baru ${i + 1}`} className="w-full h-full object-cover" />
                         <div className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow-sm">
                           Siap Diunggah {i + 1}
                         </div>
@@ -506,11 +521,11 @@ export default function FormDestinasiClient({ categories, initialData }: FormDes
           <div className="md:hidden px-4 pt-1 pb-4">
             <button
               onClick={handleSave}
-              disabled={isPending}
+              disabled={isPending || isUploadingImages}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white py-3.5 rounded-2xl font-semibold text-base transition-colors shadow-[0_4px_20px_rgba(37,99,235,0.25)] flex justify-center items-center gap-2"
             >
-              {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-              {isPending ? 'Menyimpan...' : 'Simpan Destinasi'}
+              {isPending || isUploadingImages ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+              {isUploadingImages ? 'Mengunggah...' : isPending ? 'Menyimpan...' : 'Simpan Destinasi'}
             </button>
           </div>
         </div>

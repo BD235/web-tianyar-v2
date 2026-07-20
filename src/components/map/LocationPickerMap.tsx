@@ -50,6 +50,7 @@ export default function LocationPickerMap({ onLocationSelect, position }: Locati
   const [mapKey] = useState(() => `leaflet-map-${Date.now()}`)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
   }, [])
 

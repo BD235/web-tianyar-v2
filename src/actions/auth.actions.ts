@@ -11,6 +11,16 @@ const RATE_LIMIT_WINDOW = 60 * 1000
 
 function checkRateLimit(identifier: string) {
   const now = Date.now()
+
+  // Lazy cleanup entry yang sudah expired untuk mencegah memory leak di server
+  if (rateLimitMap.size > 30) {
+    for (const [key, record] of rateLimitMap) {
+      if (now > record.resetAt) {
+        rateLimitMap.delete(key)
+      }
+    }
+  }
+
   const record = rateLimitMap.get(identifier)
 
   if (record) {

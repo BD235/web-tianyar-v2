@@ -16,8 +16,6 @@ export default async function AdminFormLayout({
     redirect('/login')
   }
 
-  const isAdminAuth = true
-
   return (
     <div className="flex flex-col min-h-screen relative pt-0 md:pt-28">
       <TopLogo />

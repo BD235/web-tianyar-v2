@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
 
 interface GalleryCarouselProps {
@@ -72,10 +73,15 @@ export default function GalleryCarousel({
             >
               {item.type === 'image' ? (
                 <>
-                  <img
+                  <Image
                     src={item.url}
                     alt={`Galeri ${idx + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 60vw"
+                    className="object-cover"
+                    // Gambar pertama eager (LCP), sisanya lazy
+                    loading={idx === 0 ? 'eager' : 'lazy'}
                   />
                   <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <div className="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-sm">
@@ -159,10 +165,15 @@ export default function GalleryCarousel({
             onClick={(e) => e.stopPropagation()}
           >
             {displayItems[currentIndex]?.type === 'image' && (
-              <img
-                src={displayItems[currentIndex].url}
+              // unoptimized=true di lightbox: user sudah melihat gambar di carousel
+              // Lightbox hanya menampilkan full-size — tidak perlu optimasi ulang
+              <Image
+                src={displayItems[currentIndex].url!}
                 alt={`Detail Galeri ${currentIndex + 1}`}
-                className="max-w-full max-h-[80vh] object-contain rounded-2xl"
+                width={1200}
+                height={800}
+                className="max-w-full max-h-[80vh] object-contain rounded-2xl w-auto h-auto"
+                unoptimized
               />
             )}
           </div>

@@ -1,4 +1,5 @@
 import { getDestinations, getCategories } from '@/actions/destinations.actions'
+import type { Destination, Category } from '@/types'
 import SearchBar from '@/components/home/SearchBar'
 import CategoryPills from '@/components/home/CategoryPills'
 import DestinationCard from '@/components/home/DestinationCard'
@@ -29,16 +30,17 @@ export default async function DestinasiPage({
   const { data: destinations, count } = destinationsRes
   const { data: categories } = categoriesRes
 
-  const destinationListRaw: any[] = destinations || []
-  const categoryListRaw: any[] = categories || []
+  const destinationListRaw: Destination[] = (destinations || []) as unknown as Destination[]
+  const categoryListRaw: Category[] = (categories || []) as unknown as Category[]
 
   const totalPages = Math.ceil((count || 0) / limit)
 
   return (
     <main className="min-h-screen px-5 sm:px-6 pt-[30px] pb-32 max-w-7xl mx-auto space-y-12">
 
+      {/* Header + Search + Category */}
       <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
-
+        {/* Mobile header */}
         <div className="md:hidden w-full flex items-start justify-between mb-1">
           <div>
             <p className="text-xs font-medium text-gray-400 mb-0.5">Destinasi</p>
@@ -54,6 +56,7 @@ export default async function DestinasiPage({
           </div>
         </div>
 
+        {/* Search + Category (mobile & desktop) */}
         <div className="w-full lg:w-[400px] shrink-0">
           <SearchBar />
         </div>
@@ -63,11 +66,11 @@ export default async function DestinasiPage({
       </section>
 
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+          <h2 className="text-base sm:text-xl font-semibold text-gray-900 leading-snug break-words">
             {query ? `Hasil pencarian: "${query}"` : category && category !== 'all' ? `Kategori: ${categoryListRaw.find(c => c.slug === category)?.name || category}` : 'Semua Destinasi'}
           </h2>
-          <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+          <span className="text-xs sm:text-sm font-medium text-gray-500 bg-gray-100 px-2.5 sm:px-3 py-1 rounded-full self-start sm:self-auto shrink-0">
             {count || 0} ditemukan
           </span>
         </div>

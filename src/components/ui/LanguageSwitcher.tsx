@@ -2,15 +2,14 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Globe } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
   const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

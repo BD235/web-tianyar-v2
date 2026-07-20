@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 type Language = "en" | "id";
 
@@ -35,12 +35,11 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const storedLang = localStorage.getItem("language") as Language;
     if (storedLang && (storedLang === "en" || storedLang === "id")) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLanguageState(storedLang);
     }
   }, []);
@@ -50,9 +49,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("language", lang);
   };
 
-  const t = (key: string) => {
+  const t = useCallback((key: string) => {
     return translations[language][key as keyof typeof translations["en"]] || key;
-  };
+  }, [language]);
 
   // Render langsung cegah layout shift
   return (

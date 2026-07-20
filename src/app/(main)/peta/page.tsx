@@ -25,7 +25,9 @@ export default async function PetaPage({
   const destinations = destinationsRes.data
   const categories = categoriesRes.data
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const destinationListRaw: any[] = destinations || []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const categoryListRaw: any[] = categories || []
 
   return (

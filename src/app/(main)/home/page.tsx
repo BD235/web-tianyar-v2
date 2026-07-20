@@ -1,4 +1,5 @@
 import { getPopularDestinations, getDestinations, getCategories } from '@/actions/destinations.actions'
+import type { Destination, Category } from '@/types'
 import SearchBar from '@/components/home/SearchBar'
 import CategoryPills from '@/components/home/CategoryPills'
 import DestinationCard from '@/components/home/DestinationCard'
@@ -18,9 +19,9 @@ export default async function HomePage() {
   const allDestinations = allRes.data
   const categories = categoriesRes.data
 
-  const popularListRaw: any[] = popularDestinations || []
-  const allListRaw: any[] = allDestinations || []
-  const categoryListRaw: any[] = categories || []
+  const popularListRaw: Destination[] = (popularDestinations || []) as unknown as Destination[]
+  const allListRaw: Destination[] = (allDestinations || []) as unknown as Destination[]
+  const categoryListRaw: Category[] = (categories || []) as unknown as Category[]
 
   const hasMorePopular = popularListRaw.length > 10
   const displayPopular = popularListRaw.slice(0, 10)
@@ -32,12 +33,12 @@ export default async function HomePage() {
     <main className="min-h-screen px-5 sm:px-6 pt-[30px] pb-32 max-w-7xl mx-auto space-y-10">
 
       {/* Header + Search + Category */}
-      <section className="flex flex-col lg:flex-row justify-between gap-4 items-start lg:items-center w-full">
-
+      <section className="flex flex-col lg:flex-row justify-between gap-6 items-start lg:items-center w-full">
+        {/* Mobile header */}
         <div className="md:hidden w-full flex items-start justify-between mb-1">
           <div>
             <p className="text-xs font-medium text-gray-400 mb-0.5">Beranda</p>
-            <h1 className="text-[22px] font-semibold text-gray-900 leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-tight">
               Tianyar
             </h1>
           </div>
@@ -49,6 +50,7 @@ export default async function HomePage() {
           </div>
         </div>
 
+        {/* Search + Category (mobile & desktop) */}
         <div className="w-full lg:w-[400px] shrink-0">
           <SearchBar />
         </div>
@@ -139,4 +141,3 @@ export default async function HomePage() {
     </main>
   )
 }
-

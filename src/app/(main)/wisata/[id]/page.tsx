@@ -1,6 +1,7 @@
 import { getDestinationById } from '@/actions/destinations.actions'
 import { MapPin, ArrowLeft, Star, Heart } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import FacilityIcons from '@/components/wisata/FacilityIcons'
 import DescriptionToggle from '@/components/wisata/DescriptionToggle'
 import GalleryCarousel from '@/components/wisata/GalleryCarousel'
@@ -9,6 +10,7 @@ import TipsAndRulesCard from '@/components/wisata/TipsAndRulesCard'
 export default async function WisataDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params
   const res = await getDestinationById(resolvedParams.id)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dest: any = res.data
 
   if (!dest) {
@@ -24,13 +26,12 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
   }
 
   const mapLink = dest.map_url || `https://maps.google.com/?q=${dest.latitude},${dest.longitude}`
-  const categoryName = (dest as any).categories?.name || 'Wisata'
   const isFree = !dest.price || dest.price === 0
   const facilities = Array.isArray(dest.facilities) ? dest.facilities : []
   const displayFacilities = facilities.length > 0 ? facilities : ['Area Parkir', 'Spot Foto', 'Toilet Umum', 'Gazebo']
 
   const validImages = Array.isArray(dest.images)
-    ? dest.images.filter((img: any) => typeof img === 'string' && img.trim().length > 0 && !img.includes('null') && !img.includes('undefined'))
+    ? dest.images.filter((img: unknown) => typeof img === 'string' && img.trim().length > 0 && !img.includes('null') && !img.includes('undefined'))
     : []
   const galleryImages = validImages
   const placeholderColors = ['bg-[#C4C8CC]', 'bg-[#8E9399]', 'bg-[#585D63]', 'bg-[#374151]']
@@ -42,10 +43,15 @@ export default async function WisataDetailPage({ params }: { params: Promise<{ i
 
         <div className="relative w-full aspect-[4/4.5] md:aspect-[16/10] lg:aspect-[16/8] rounded-3xl overflow-hidden bg-gray-100 shadow-sm">
           {validImages.length > 0 ? (
-            <img
+            // priority=true: gambar hero adalah LCP, preload agar metrik Core Web Vitals baik
+            <Image
               src={validImages[0]}
               alt={dest.title}
-              className="w-full h-full object-cover"
+              fill
+              priority
+              unoptimized
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 60vw"
+              className="object-cover"
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 gap-2">

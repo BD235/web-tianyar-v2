@@ -19,19 +19,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
 
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''))
-  const inputRefs = Array.from({ length: OTP_LENGTH }, () => useRef<HTMLInputElement>(null))
+  const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(OTP_LENGTH).fill(null))
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return
     const newOtp = [...otp]
     newOtp[index] = value.slice(-1)
     setOtp(newOtp)
-    if (value && index < OTP_LENGTH - 1) inputRefs[index + 1].current?.focus()
+    if (value && index < OTP_LENGTH - 1) inputRefs.current[index + 1]?.focus()
   }
 
   const handleOtpKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs[index - 1].current?.focus()
+      inputRefs.current[index - 1]?.focus()
     }
   }
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH)
     if (pasted.length === OTP_LENGTH) {
       setOtp(pasted.split(''))
-      inputRefs[OTP_LENGTH - 1].current?.focus()
+      inputRefs.current[OTP_LENGTH - 1]?.focus()
     }
     e.preventDefault()
   }
@@ -214,7 +214,7 @@ export default function LoginPage() {
                   {otp.map((digit, index) => (
                     <input
                       key={index}
-                      ref={inputRefs[index]}
+                      ref={(el) => { inputRefs.current[index] = el }}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
